@@ -5,8 +5,6 @@ import Network.OAuth.Http.Request
 import Network.OAuth.Http.Response
 import Network.OAuth.Http.CurlHttpClient
 import Data.Maybe
--- import qualified Data.Text.Lazy as T
--- #import qualified Data.Text.Lazy.Encoding as TE
 import Data.Aeson
 import System (getArgs)
 
@@ -25,7 +23,7 @@ main = do
 data Credentials = Credentials String String
 
 
-getResponse :: Credentials -> String -> IO (Maybe Value)
+getResponse :: Credentials -> String -> IO Value
 getResponse credentials url = do
   let token = generateToken credentials
   let srvUrl = fromJust . parseURL $ url
@@ -35,10 +33,8 @@ getResponse credentials url = do
 getResponse' :: Token -> Request -> IO Response
 getResponse' token request = runOAuthM token $ setupOAuth request
 
-extractJSON :: Response -> Maybe Value
-extractJSON response = decode $ rspPayload response
--- extractJSON :: Response -> String
--- extractJSON response = T.unpack . TE.decodeUtf8 $ rspPayload response
+extractJSON :: Response -> Value
+extractJSON response = fromJust $ decode $ rspPayload response
 
 setupOAuth :: Request -> OAuthMonadT IO Response
 setupOAuth request = do
