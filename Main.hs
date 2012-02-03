@@ -15,7 +15,7 @@ main = do
   let oauthSecret = last args
   let creds = Credentials oauthKey oauthSecret
   let url = "http://api.v3.factual.com/t/places/read?limit=50&filters=%7B%22name%22%3A%22Bar%20Hayama%22%7D"
-  payload <- getResponse creds url
+  payload <- runQuery creds url
   putStrLn $ show payload
 
 
@@ -23,23 +23,23 @@ main = do
 data Credentials = Credentials String String
 
 
-getResponse :: Credentials -> String -> IO Value
-getResponse credentials url = do
+runQuery :: Credentials -> String -> IO Value
+runQuery credentials url = do
   let token = generateToken credentials
-  let srvUrl = fromJust . parseURL $ url
-  response <- getResponse' token srvUrl
+  let request = generateRequest url
+  response <- runOAuthM token $ setupOAuth request
   return $ extractJSON response
 
-getResponse' :: Token -> Request -> IO Response
-getResponse' token request = runOAuthM token $ setupOAuth request
+generateToken :: Credentials -> Token
+generateToken (Credentials key secret) = fromApplication $ Application key secret OOB
 
-extractJSON :: Response -> Value
-extractJSON response = fromJust $ decode $ rspPayload response
+generateRequest :: String -> Request
+generateRequest = fromJust . parseURL
 
 setupOAuth :: Request -> OAuthMonadT IO Response
 setupOAuth request = do
   oauthRequest <- signRq2 HMACSHA1 Nothing request
   serviceRequest CurlClient oauthRequest
 
-generateToken :: Credentials -> Token
-generateToken (Credentials key secret) = fromApplication $ Application key secret OOB
+extractJSON :: Response -> Value
+extractJSON = fromJust . decode . rspPayload
