@@ -1,4 +1,8 @@
-module Data.Factual.TableQuery where
+module Data.Factual.TableQuery
+  ( TableQuery(..)
+  , Table(..)
+  , QueryMethod(..)
+  ) where
 
 import Data.Factual.Query
 

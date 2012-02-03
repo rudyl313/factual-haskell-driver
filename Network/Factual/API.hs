@@ -1,13 +1,13 @@
-module Network.Factual.API where
+module Network.Factual.API (runQuery) where
 
+import Data.Maybe (fromJust)
+import Network.OAuth.Consumer
+import Network.OAuth.Http.Request (Request, parseURL)
+import Network.OAuth.Http.Response (Response(..))
+import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
+import Data.Aeson (Value, decode)
 import Data.Factual.Query
 import Data.Factual.Credentials
-import Network.OAuth.Consumer
-import Network.OAuth.Http.Request
-import Network.OAuth.Http.Response
-import Network.OAuth.Http.CurlHttpClient
-import Data.Maybe
-import Data.Aeson
 
 runQuery :: (Query query) => Credentials -> query -> IO Value
 runQuery credentials query = do

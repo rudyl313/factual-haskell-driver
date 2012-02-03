@@ -1,4 +1,4 @@
-module Data.Factual.Query where
+module Data.Factual.Query (Query(..)) where
 
 class Query q where
   toPath :: q -> String
