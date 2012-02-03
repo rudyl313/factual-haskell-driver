@@ -13,7 +13,12 @@ main = do
   let creds = Credentials oauthKey oauthSecret
   let query = TableQuery { table = Places
                          , queryMethod = Read
+                         , searchTerms = []
+                         , select = ["name"]
                          , limit = Just 50
-                         , filters = Just "%7B%22name%22%3A%22Bar%20Hayama%22%7D" }
+                         , offset = Nothing
+                         , includeCount = True
+                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
+                         , filters = [Filter "name" "Stand"] }
   payload <- runQuery creds query
   putStrLn $ show payload
