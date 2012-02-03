@@ -1,0 +1,4 @@
+.vagrant
+cookbooks/**/*
+Vagrantfile
+main
