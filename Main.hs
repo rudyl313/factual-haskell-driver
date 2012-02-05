@@ -3,6 +3,7 @@ module Main where
 import System (getArgs)
 import Network.Factual.API
 import Data.Factual.ReadQuery
+import Data.Factual.SchemaQuery
 import Data.Factual.Credentials
 import Data.Factual.Table
 import Data.Factual.Circle
@@ -24,3 +25,6 @@ main = do
                         , filters = [EqualStr "name" "Stand"] }
   payload <- runQuery creds query
   putStrLn $ show payload
+  let schema = SchemaQuery Places
+  payload2 <- runQuery creds schema
+  putStrLn $ show payload2
