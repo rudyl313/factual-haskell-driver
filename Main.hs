@@ -4,6 +4,9 @@ import System (getArgs)
 import Network.Factual.API
 import Data.Factual.ReadQuery
 import Data.Factual.Credentials
+import Data.Factual.Table
+import Data.Factual.Circle
+import Data.Factual.Filter
 
 main :: IO()
 main = do
