@@ -3,17 +3,23 @@ import Data.Factual.Query
 import Data.Factual.Table
 import Data.Factual.ReadQuery
 
-placeTableTest = TestCase (do let query = blankReadQuery { table = Places }
-                              let path = toPath query
-                              assertEqual "Correct table" path "/t/places/read?include_count=false")
+placeTableTest = TestCase (do
+  let expected = "/t/places/read?include_count=false"
+  assertEqual "Correct path for places table" (pathForTable Places) expected)
 
-restaurantsTableTest = TestCase (do let query = blankReadQuery { table = USRestaurants }
-                                    let path = toPath query
-                                    assertEqual "Correct table" path "/t/restaurants-us/read?include_count=false")
+restaurantsTableTest = TestCase (do
+  let expected = "/t/restaurants-us/read?include_count=false"
+  assertEqual "Correct path for us restaurants table" (pathForTable USRestaurants) expected)
 
-globalTableTest = TestCase (do let query = blankReadQuery { table = Global }
-                               let path = toPath query
-                               assertEqual "Correct table" path "/t/global/read?include_count=false")
+globalTableTest = TestCase (do
+  let expected = "/t/global/read?include_count=false"
+  assertEqual "Correct path for global table" (pathForTable Global) expected)
+
+pathForTable :: Table -> String
+pathForTable = toPath . readQueryForTable
+
+readQueryForTable :: Table -> ReadQuery
+readQueryForTable t = blankReadQuery { table = t }
 
 blankReadQuery :: ReadQuery
 blankReadQuery = ReadQuery { table = Places
