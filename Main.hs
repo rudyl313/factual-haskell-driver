@@ -3,6 +3,7 @@ module Main where
 import System (getArgs)
 import Network.Factual.API
 import Data.Factual.ReadQuery
+import Data.Factual.ResolveQuery
 import Data.Factual.SchemaQuery
 import Data.Factual.Credentials
 import Data.Factual.Table
@@ -29,3 +30,6 @@ main = do
   let schema = SchemaQuery Places
   payload2 <- runQuery creds schema
   putStrLn $ show payload2
+  let resolve = ResolveQuery [ResolveStr "name" "McDonalds"]
+  payload3 <- runQuery creds resolve
+  putStrLn $ show payload3
