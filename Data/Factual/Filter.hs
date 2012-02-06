@@ -18,6 +18,8 @@ data Filter = EqualNum Field Double
             | NotBeginsWithAny Field [String]
             | IsBlank Field
             | IsNotBlank Field
+            | And [Filter]
+            | Or [Filter]
             deriving Eq
 
 instance Show Filter where
@@ -35,3 +37,8 @@ instance Show Filter where
   show (NotBeginsWithAny field strs) = (show field) ++ ":{" ++ (show "$nbwin") ++ ":[" ++ (join "," $ map show strs) ++ "]}"
   show (IsBlank field) = (show field) ++ ":{\"$blank\":true}"
   show (IsNotBlank field) = (show field) ++ ":{\"$blank\":false}"
+  show (And filters) = (show "$and") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
+  show (Or filters) = (show "$or") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
+
+showFilter :: Filter -> String
+showFilter filter = "{" ++ (show filter) ++ "}"
