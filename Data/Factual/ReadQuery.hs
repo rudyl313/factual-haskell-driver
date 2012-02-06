@@ -2,12 +2,13 @@ module Data.Factual.ReadQuery (ReadQuery(..)) where
 
 import Data.Factual.Query
 import Data.Factual.Table
+import Data.Factual.Search
 import Data.Factual.Circle
 import Data.Factual.Filter
 import Data.Factual.Utils
 
 data ReadQuery = ReadQuery { table        :: Table
-                           , searchTerms  :: [String]
+                           , search       :: Search
                            , select       :: [String]
                            , limit        :: Maybe Int
                            , offset       :: Maybe Int
@@ -19,7 +20,7 @@ data ReadQuery = ReadQuery { table        :: Table
 instance Query ReadQuery where
   toPath query = (show $ table query)
                ++ "read?"
-               ++ (searchTermsString $ searchTerms query)
+               ++ (searchString $ search query)
                ++ (selectString $ select query)
                ++ (limitString $ limit query)
                ++ (offsetString $ offset query)
@@ -27,9 +28,10 @@ instance Query ReadQuery where
                ++ (geoString $ geo query)
                ++ (includeCountString $ includeCount query)
 
-searchTermsString :: [String] -> String
-searchTermsString [] = ""
-searchTermsString terms = "q=" ++ (join "," terms) ++ "&"
+searchString :: Search -> String
+searchString (AndSearch []) = ""
+searchString (OrSearch []) = ""
+searchString search = "q=" ++ (show search) ++ "&"
 
 selectString :: [String] -> String
 selectString selects = "select=" ++ (join "," selects) ++ "&"

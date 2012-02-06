@@ -6,6 +6,7 @@ import Data.Factual.ReadQuery
 import Data.Factual.SchemaQuery
 import Data.Factual.Credentials
 import Data.Factual.Table
+import Data.Factual.Search
 import Data.Factual.Circle
 import Data.Factual.Filter
 
@@ -16,7 +17,7 @@ main = do
   let oauthSecret = last args
   let creds = Credentials oauthKey oauthSecret
   let query = ReadQuery { table = Places
-                        , searchTerms = []
+                        , search = AndSearch []
                         , select = ["name"]
                         , limit = Just 50
                         , offset = Nothing
