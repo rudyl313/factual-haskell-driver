@@ -10,6 +10,7 @@ import Data.Factual.Table
 import Data.Factual.Search
 import Data.Factual.Circle
 import Data.Factual.Filter
+import qualified Data.Factual.CrosswalkQuery as C
 
 main :: IO()
 main = do
@@ -33,3 +34,10 @@ main = do
   let resolve = ResolveQuery [ResolveStr "name" "McDonalds"]
   payload3 <- runQuery creds resolve
   putStrLn $ show payload3
+  let crosswalk = C.CrosswalkQuery { C.factualId = Just "97598010-433f-4946-8fd5-4a6dd1639d77"
+                                   , C.limit = Nothing
+                                   , C.namespace = Nothing
+                                   , C.namespaceId = Nothing
+                                   , C.only = ["loopt"] }
+  payload4 <- runQuery creds crosswalk
+  putStrLn $ show payload4
