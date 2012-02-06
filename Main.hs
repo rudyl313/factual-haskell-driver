@@ -2,14 +2,11 @@ module Main where
 
 import System (getArgs)
 import Network.Factual.API
+import Data.Factual.Credentials
+import Data.Factual.Table
 import Data.Factual.ReadQuery
 import Data.Factual.ResolveQuery
 import Data.Factual.SchemaQuery
-import Data.Factual.Credentials
-import Data.Factual.Table
-import Data.Factual.Search
-import Data.Factual.Circle
-import Data.Factual.Filter
 import qualified Data.Factual.CrosswalkQuery as C
 
 main :: IO()

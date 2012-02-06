@@ -18,9 +18,6 @@ instance Query CrosswalkQuery where
                                 , namespaceIdString $ namespaceId query
                                 , onlyString $ only query ]
 
-joinAndFilter :: [String] -> String
-joinAndFilter strs = join "&" $ filter ("" /=) strs
-
 factualIdString :: Maybe String -> String
 factualIdString (Just id) = "factual_id=" ++ id
 factualIdString Nothing   = ""
