@@ -7,7 +7,9 @@ import Data.Factual.Table
 import Data.Factual.ReadQuery
 import Data.Factual.ResolveQuery
 import Data.Factual.SchemaQuery
+import Data.Factual.Response
 import qualified Data.Factual.CrosswalkQuery as C
+import Data.Aeson
 
 main :: IO()
 main = do
@@ -38,3 +40,9 @@ main = do
                                    , C.only = ["loopt"] }
   payload4 <- runQuery creds crosswalk
   putStrLn $ show payload4
+  putStrLn $ status payload
+  putStrLn $ show $ version payload
+  let resp = response payload
+  putStrLn $ show $ resp
+  putStrLn $ show $ lookupNumber "total_row_count" resp
+  putStrLn $ show $ toList $ lookupValue "data" resp

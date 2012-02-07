@@ -8,15 +8,16 @@ import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
 import Data.Aeson (Value, decode)
 import Data.Factual.Query
 import Data.Factual.Credentials
+import qualified Data.Factual.Response as F
 
-runQuery :: (Query query) => Credentials -> query -> IO Value
+runQuery :: (Query query) => Credentials -> query -> IO F.Response
 runQuery credentials query = do
   let token = generateToken credentials
   let fullpath = "http://api.v3.factual.com" ++ toPath query
   let request = generateRequest fullpath
   putStrLn fullpath -- temp
   response <- runOAuthM token $ setupOAuth request
-  return $ extractJSON response
+  return $ F.fromValue $ extractJSON response
 
 generateToken :: Credentials -> Token
 generateToken (Credentials key secret) = fromApplication $ Application key secret OOB
