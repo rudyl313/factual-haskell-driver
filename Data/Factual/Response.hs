@@ -1,5 +1,11 @@
+-- | This module exports the type which encapsulates Factual API responses. It
+--   also provides some utility function that can be used to manipulate the
+--   Aeson object which holds the data.
 module Data.Factual.Response
-  ( Response(..)
+  (
+    -- * Response type
+    Response(..)
+    -- * Utility functions
   , fromValue
   , toList
   , lookupNumber
@@ -14,11 +20,16 @@ import qualified Data.HashMap.Lazy as L
 import qualified Data.Text as T
 import qualified Data.Vector as V
 
+-- | A response object has a status (that will be ok if the query was successful
+--   and error if the query failed), a version (which should always be 3.0) and
+--   the actual response data which is an Aeson value.
 data Response = Response { status   :: String
                          , version  :: Double
                          , response :: Value
                          } deriving (Eq, Show)
 
+-- | This function is used by the API module to turn the Aeson value returned by
+--   the API into a Response value.
 fromValue :: Value -> Response
 fromValue value = Response { status = lookupString "status" value
                            , version = lookupNumber "version" value
