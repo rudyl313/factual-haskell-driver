@@ -9,22 +9,48 @@ import Data.Factual.Response
 import Data.Factual.Credentials
 import qualified Data.Factual.CrosswalkQuery as C
 
-blankReadQuery :: ReadQuery
-blankReadQuery = ReadQuery { table = Places
-                           , search = AndSearch []
-                           , select = []
-                           , limit = Nothing
-                           , offset = Nothing
-                           , filters = []
-                           , geo = Nothing
-                           , includeCount = False }
+runQueryTests = runTestTT queryTests
 
-blankCrosswalkQuery :: C.CrosswalkQuery
-blankCrosswalkQuery = C.CrosswalkQuery { C.factualId = Nothing
-                                       , C.limit = Nothing
-                                       , C.namespace = Nothing
-                                       , C.namespaceId = Nothing
-                                       , C.only = [] }
+runResponseTests key secret = runTestTT $ responseTests (Credentials key secret)
+
+queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
+                 , TestLabel "Restaurants table test" restaurantsTablePathTest
+                 , TestLabel "Global table test" globalTablePathTest
+                 , TestLabel "And search test" andSearchPathTest
+                 , TestLabel "Or search test" orSearchPathTest
+                 , TestLabel "Select test" selectPathTest
+                 , TestLabel "Limit test" limitPathTest
+                 , TestLabel "Offset test" offsetPathTest
+                 , TestLabel "Equal number filter test" equalNumFilterTest
+                 , TestLabel "Equal string filter test" equalStrFilterTest
+                 , TestLabel "Not equal number filter test" notEqualNumFilterTest
+                 , TestLabel "Not equal string filter test" notEqualStrFilterTest
+                 , TestLabel "In number list filter test" inNumListFilterTest
+                 , TestLabel "In string list filter test" inStrListFilterTest
+                 , TestLabel "Not in number list filter test" notInNumListFilterTest
+                 , TestLabel "Not in string list filter test" notInStrListFilterTest
+                 , TestLabel "Begins with filter test" beginsWithFilterTest
+                 , TestLabel "Not begins with filter test" notBeginsWithFilterTest
+                 , TestLabel "Begins with any filter test" beginsWithAnyFilterTest
+                 , TestLabel "Not begins with any filter test" notBeginsWithAnyFilterTest
+                 , TestLabel "Is blank filter test" isBlankFilterTest
+                 , TestLabel "Is not blank filter test" isNotBlankFilterTest
+                 , TestLabel "And filter test" andFilterTest
+                 , TestLabel "Or filter test" andFilterTest
+                 , TestLabel "Geo test" geoTest
+                 , TestLabel "Include count test" includeCountTest
+                 , TestLabel "Schema query test" schemaQueryTest
+                 , TestLabel "Resolve query test" resolveQueryTest
+                 , TestLabel "Factual ID test" factualIdTest
+                 , TestLabel "Crosswalk limit test" limitCWPathTest
+                 , TestLabel "Namespace test" namespaceTest
+                 , TestLabel "Namespace ID test" namespaceIdTest
+                 , TestLabel "Only test" onlyTest ]
+
+responseTests creds = TestList [ TestLabel "Read test" (readResponseTest creds)
+                               , TestLabel "Schema test" (schemaResponseTest creds)
+                               , TestLabel "Resolve test" (resolveResponseTest creds)
+                               , TestLabel "Crosswalk test" (crosswalkResponseTest creds) ]
 
 placeTablePathTest = TestCase (do
   let expected = "/t/places/read?include_count=false"
@@ -191,57 +217,13 @@ onlyTest = TestCase (do
   let path = toPath $ blankCrosswalkQuery { C.only = ["yelp", "loopd"] }
   assertEqual "Correct path for a only" expected path)
 
-
-queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
-                 , TestLabel "Restaurants table test" restaurantsTablePathTest
-                 , TestLabel "Global table test" globalTablePathTest
-                 , TestLabel "And search test" andSearchPathTest
-                 , TestLabel "Or search test" orSearchPathTest
-                 , TestLabel "Select test" selectPathTest
-                 , TestLabel "Limit test" limitPathTest
-                 , TestLabel "Offset test" offsetPathTest
-                 , TestLabel "Equal number filter test" equalNumFilterTest
-                 , TestLabel "Equal string filter test" equalStrFilterTest
-                 , TestLabel "Not equal number filter test" notEqualNumFilterTest
-                 , TestLabel "Not equal string filter test" notEqualStrFilterTest
-                 , TestLabel "In number list filter test" inNumListFilterTest
-                 , TestLabel "In string list filter test" inStrListFilterTest
-                 , TestLabel "Not in number list filter test" notInNumListFilterTest
-                 , TestLabel "Not in string list filter test" notInStrListFilterTest
-                 , TestLabel "Begins with filter test" beginsWithFilterTest
-                 , TestLabel "Not begins with filter test" notBeginsWithFilterTest
-                 , TestLabel "Begins with any filter test" beginsWithAnyFilterTest
-                 , TestLabel "Not begins with any filter test" notBeginsWithAnyFilterTest
-                 , TestLabel "Is blank filter test" isBlankFilterTest
-                 , TestLabel "Is not blank filter test" isNotBlankFilterTest
-                 , TestLabel "And filter test" andFilterTest
-                 , TestLabel "Or filter test" andFilterTest
-                 , TestLabel "Geo test" geoTest
-                 , TestLabel "Include count test" includeCountTest
-                 , TestLabel "Schema query test" schemaQueryTest
-                 , TestLabel "Resolve query test" resolveQueryTest
-                 , TestLabel "Factual ID test" factualIdTest
-                 , TestLabel "Crosswalk limit test" limitCWPathTest
-                 , TestLabel "Namespace test" namespaceTest
-                 , TestLabel "Namespace ID test" namespaceIdTest
-                 , TestLabel "Only test" onlyTest ]
-
-runQueryTests = runTestTT queryTests
-
-runResponseTests key secret = runTestTT $ responseTests (Credentials key secret)
-
-responseTests creds = TestList [ TestLabel "Read test" (readResponseTest creds)
-                               , TestLabel "Schema test" (schemaResponseTest creds)
-                               , TestLabel "Resolve test" (resolveResponseTest creds)
-                               , TestLabel "Crosswalk test" (crosswalkResponseTest creds) ]
-
 readResponseTest :: Credentials -> Test
 readResponseTest creds = TestCase (do
   let query = ReadQuery { table = Places
-                        , search = AndSearch []
+                        , search = AndSearch ["McDonalds", "Burger King"]
                         , select = ["name"]
                         , limit = Just 50
-                        , offset = Nothing
+                        , offset = Just 10
                         , includeCount = True
                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                         , filters = [EqualStr "name" "Stand"] }
@@ -269,3 +251,20 @@ crosswalkResponseTest creds = TestCase (do
                                    , C.only = ["loopt"] }
   result <- runQuery creds query
   assertEqual "Valid read query" "ok" (status result))
+
+blankReadQuery :: ReadQuery
+blankReadQuery = ReadQuery { table = Places
+                           , search = AndSearch []
+                           , select = []
+                           , limit = Nothing
+                           , offset = Nothing
+                           , filters = []
+                           , geo = Nothing
+                           , includeCount = False }
+
+blankCrosswalkQuery :: C.CrosswalkQuery
+blankCrosswalkQuery = C.CrosswalkQuery { C.factualId = Nothing
+                                       , C.limit = Nothing
+                                       , C.namespace = Nothing
+                                       , C.namespaceId = Nothing
+                                       , C.only = [] }
