@@ -1,8 +1,16 @@
-module Data.Factual.CrosswalkQuery (CrosswalkQuery(..)) where
+-- | This module exports the type used to create crosswalk queries
+module Data.Factual.CrosswalkQuery
+  (
+   -- * CrosswalkQuery type
+   CrosswalkQuery(..)
+  ) where
 
 import Data.Factual.Query
 import Data.Factual.Utils
 
+-- | A crosswalk query can be formed by specifying a factual id and
+--   (optionally) a list of namespaces to only include, or by specifying a
+--   namespace and namespace id. An optional limit can be set as well.
 data CrosswalkQuery = CrosswalkQuery { factualId :: Maybe String
                                      , limit :: Maybe Int
                                      , namespace :: Maybe String
