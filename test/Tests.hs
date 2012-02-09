@@ -2,6 +2,9 @@ import Test.HUnit
 import Data.Factual.Query
 import Data.Factual.Table
 import Data.Factual.ReadQuery
+import Data.Factual.SchemaQuery
+import Data.Factual.ResolveQuery
+import qualified Data.Factual.CrosswalkQuery as C
 
 blankReadQuery :: ReadQuery
 blankReadQuery = ReadQuery { table = Places
@@ -12,6 +15,13 @@ blankReadQuery = ReadQuery { table = Places
                            , filters = []
                            , geo = Nothing
                            , includeCount = False }
+
+blankCrosswalkQuery :: C.CrosswalkQuery
+blankCrosswalkQuery = C.CrosswalkQuery { C.factualId = Nothing
+                                       , C.limit = Nothing
+                                       , C.namespace = Nothing
+                                       , C.namespaceId = Nothing
+                                       , C.only = [] }
 
 placeTablePathTest = TestCase (do
   let expected = "/t/places/read?include_count=false"
@@ -143,6 +153,42 @@ includeCountTest = TestCase (do
   let path = toPath $ blankReadQuery { includeCount = True }
   assertEqual "Correct path for include count" expected path)
 
+schemaQueryTest = TestCase (do
+  let expected = "/t/places/schema"
+  let path = toPath $ SchemaQuery Places
+  assertEqual "Correct path for a schema query" expected path)
+
+resolveQueryTest = TestCase (do
+  let expected = "/places/resolve?values={\"field1\":\"value1\",\"field2\":32.1}"
+  let path = toPath $ ResolveQuery [ResolveStr "field1" "value1", ResolveNum "field2" 32.1]
+  assertEqual "Correct path for a resolve query" expected path)
+
+factualIdTest = TestCase (do
+  let expected = "/places/crosswalk?factual_id=1234"
+  let path = toPath $ blankCrosswalkQuery { C.factualId = Just "1234" }
+  assertEqual "Correct path for a factual id" expected path)
+
+limitCWPathTest = TestCase (do
+  let expected = "/places/crosswalk?limit=1234"
+  let path = toPath $ blankCrosswalkQuery { C.limit = Just 1234 }
+  assertEqual "Correct path for a limit in a crosswalk query" expected path)
+
+namespaceTest = TestCase (do
+  let expected = "/places/crosswalk?namespace=yelp"
+  let path = toPath $ blankCrosswalkQuery { C.namespace = Just "yelp" }
+  assertEqual "Correct path for a namespace" expected path)
+
+namespaceIdTest = TestCase (do
+  let expected = "/places/crosswalk?namespace_id=5432"
+  let path = toPath $ blankCrosswalkQuery { C.namespaceId = Just "5432" }
+  assertEqual "Correct path for a namespace id" expected path)
+
+onlyTest = TestCase (do
+  let expected = "/places/crosswalk?only=yelp,loopd"
+  let path = toPath $ blankCrosswalkQuery { C.only = ["yelp", "loopd"] }
+  assertEqual "Correct path for a only" expected path)
+
+
 queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
                  , TestLabel "Restaurants table test" restaurantsTablePathTest
                  , TestLabel "Global table test" globalTablePathTest
@@ -168,6 +214,13 @@ queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
                  , TestLabel "And filter test" andFilterTest
                  , TestLabel "Or filter test" andFilterTest
                  , TestLabel "Geo test" geoTest
-                 , TestLabel "Include count test" includeCountTest ]
+                 , TestLabel "Include count test" includeCountTest
+                 , TestLabel "Schema query test" schemaQueryTest
+                 , TestLabel "Resolve query test" resolveQueryTest
+                 , TestLabel "Factual ID test" factualIdTest
+                 , TestLabel "Crosswalk limit test" limitCWPathTest
+                 , TestLabel "Namespace test" namespaceTest
+                 , TestLabel "Namespace ID test" namespaceIdTest
+                 , TestLabel "Only test" onlyTest ]
 
 runQueryTests = runTestTT queryTests
