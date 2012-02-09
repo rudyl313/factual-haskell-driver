@@ -15,7 +15,6 @@ runQuery credentials query = do
   let token = generateToken credentials
   let fullpath = "http://api.v3.factual.com" ++ toPath query
   let request = generateRequest fullpath
-  putStrLn fullpath -- temp
   response <- runOAuthM token $ setupOAuth request
   return $ F.fromValue $ extractJSON response
 

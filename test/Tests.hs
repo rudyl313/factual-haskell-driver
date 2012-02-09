@@ -1,9 +1,12 @@
 import Test.HUnit
+import Network.Factual.API
 import Data.Factual.Query
 import Data.Factual.Table
 import Data.Factual.ReadQuery
 import Data.Factual.SchemaQuery
 import Data.Factual.ResolveQuery
+import Data.Factual.Response
+import Data.Factual.Credentials
 import qualified Data.Factual.CrosswalkQuery as C
 
 blankReadQuery :: ReadQuery
@@ -224,3 +227,45 @@ queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
                  , TestLabel "Only test" onlyTest ]
 
 runQueryTests = runTestTT queryTests
+
+runResponseTests key secret = runTestTT $ responseTests (Credentials key secret)
+
+responseTests creds = TestList [ TestLabel "Read test" (readResponseTest creds)
+                               , TestLabel "Schema test" (schemaResponseTest creds)
+                               , TestLabel "Resolve test" (resolveResponseTest creds)
+                               , TestLabel "Crosswalk test" (crosswalkResponseTest creds) ]
+
+readResponseTest :: Credentials -> Test
+readResponseTest creds = TestCase (do
+  let query = ReadQuery { table = Places
+                        , search = AndSearch []
+                        , select = ["name"]
+                        , limit = Just 50
+                        , offset = Nothing
+                        , includeCount = True
+                        , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
+                        , filters = [EqualStr "name" "Stand"] }
+  result <- runQuery creds query
+  assertEqual "Valid read query" "ok" (status result))
+
+schemaResponseTest :: Credentials -> Test
+schemaResponseTest creds = TestCase (do
+  let query = SchemaQuery Places
+  result <- runQuery creds query
+  assertEqual "Valid read query" "ok" (status result))
+
+resolveResponseTest :: Credentials -> Test
+resolveResponseTest creds = TestCase (do
+  let query = ResolveQuery [ResolveStr "name" "McDonalds"]
+  result <- runQuery creds query
+  assertEqual "Valid read query" "ok" (status result))
+
+crosswalkResponseTest :: Credentials -> Test
+crosswalkResponseTest creds = TestCase (do
+  let query = C.CrosswalkQuery { C.factualId = Just "97598010-433f-4946-8fd5-4a6dd1639d77"
+                                   , C.limit = Nothing
+                                   , C.namespace = Nothing
+                                   , C.namespaceId = Nothing
+                                   , C.only = ["loopt"] }
+  result <- runQuery creds query
+  assertEqual "Valid read query" "ok" (status result))
