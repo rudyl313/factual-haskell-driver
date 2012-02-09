@@ -1,4 +1,4 @@
--- | This module exports the type used to create crosswalk queries
+-- | This module exports the type used to create crosswalk queries.
 module Data.Factual.CrosswalkQuery
   (
    -- * CrosswalkQuery type
@@ -9,8 +9,9 @@ import Data.Factual.Query
 import Data.Factual.Utils
 
 -- | A crosswalk query can be formed by specifying a factual id and
---   (optionally) a list of namespaces to only include, or by specifying a
---   namespace and namespace id. An optional limit can be set as well.
+--   (optionally) a list of namespaces to only include when attempting to find
+--   the ids for various namespaces, or by specifying a namespace and namespace
+--   id in order to find the factual id. An optional limit can be set as well.
 data CrosswalkQuery = CrosswalkQuery { factualId :: Maybe String
                                      , limit :: Maybe Int
                                      , namespace :: Maybe String
@@ -18,6 +19,8 @@ data CrosswalkQuery = CrosswalkQuery { factualId :: Maybe String
                                      , only :: [String]
                                      } deriving (Eq, Show)
 
+-- A crosswalk query is a member of the Query typeclass so it can generate a
+-- path to be queried.
 instance Query CrosswalkQuery where
   toPath query = "/places/crosswalk?"
                ++ joinAndFilter [ factualIdString $ factualId query
@@ -26,6 +29,8 @@ instance Query CrosswalkQuery where
                                 , namespaceIdString $ namespaceId query
                                 , onlyString $ only query ]
 
+-- The following helper functions are used to generate the separate parts of
+-- the query path.
 factualIdString :: Maybe String -> String
 factualIdString (Just id) = "factual_id=" ++ id
 factualIdString Nothing   = ""

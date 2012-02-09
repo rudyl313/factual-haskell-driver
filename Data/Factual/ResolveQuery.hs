@@ -1,4 +1,4 @@
--- | This module exports the type used to create resolve queries
+-- | This module exports the type used to create resolve queries.
 module Data.Factual.ResolveQuery
   (
     -- * ResolveQuery type
@@ -17,6 +17,7 @@ data ResolveValue = ResolveStr String String
                   | ResolveNum String Double
                   deriving Eq
 
+-- ResolveValue is a member of the Show typeclass to help generate query Strings.
 instance Show ResolveValue where
   show (ResolveStr name str) = (show name) ++ ":" ++ (show str)
   show (ResolveNum name num) = (show name) ++ ":" ++ (show num)
@@ -26,6 +27,8 @@ instance Show ResolveValue where
 --   of data.
 data ResolveQuery = ResolveQuery [ResolveValue] deriving Eq
 
+-- ResolveQuery is a member of the Query typeclass so that it can be used to
+-- make requests.
 instance Query ResolveQuery where
   toPath (ResolveQuery values) = "/places/resolve?values={"
                                ++ (join "," $ map show values)

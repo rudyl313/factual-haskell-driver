@@ -5,11 +5,14 @@ module Data.Factual.Credentials
   (
     -- * Credentials type
     Credentials(..)
+  , Key
+  , Secret
   ) where
 
+-- | The Key is the oauth key as a String.
 type Key = String
+-- | The Secret is the oauth secret as a String.
 type Secret = String
 
--- | Both Key and Secret are aliases for String and represent the oauth key
---   and secret used to access the API.
+-- | A Credentials value is used to generate a Token.
 data Credentials = Credentials Key Secret

@@ -47,10 +47,11 @@ queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
                  , TestLabel "Namespace ID test" namespaceIdTest
                  , TestLabel "Only test" onlyTest ]
 
-responseTests creds = TestList [ TestLabel "Read test" (readResponseTest creds)
-                               , TestLabel "Schema test" (schemaResponseTest creds)
-                               , TestLabel "Resolve test" (resolveResponseTest creds)
-                               , TestLabel "Crosswalk test" (crosswalkResponseTest creds) ]
+responseTests creds = TestList [ TestLabel "Read test" (readResponseTest token)
+                               , TestLabel "Schema test" (schemaResponseTest token)
+                               , TestLabel "Resolve test" (resolveResponseTest token)
+                               , TestLabel "Crosswalk test" (crosswalkResponseTest token) ]
+                    where token = generateToken creds
 
 placeTablePathTest = TestCase (do
   let expected = "/t/places/read?include_count=false"
@@ -217,8 +218,8 @@ onlyTest = TestCase (do
   let path = toPath $ blankCrosswalkQuery { C.only = ["yelp", "loopd"] }
   assertEqual "Correct path for a only" expected path)
 
-readResponseTest :: Credentials -> Test
-readResponseTest creds = TestCase (do
+readResponseTest :: Token -> Test
+readResponseTest token = TestCase (do
   let query = ReadQuery { table = Places
                         , search = AndSearch ["McDonalds", "Burger King"]
                         , select = ["name"]
@@ -227,29 +228,29 @@ readResponseTest creds = TestCase (do
                         , includeCount = True
                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                         , filters = [EqualStr "name" "Stand"] }
-  result <- runQuery creds query
+  result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
-schemaResponseTest :: Credentials -> Test
-schemaResponseTest creds = TestCase (do
+schemaResponseTest :: Token -> Test
+schemaResponseTest token = TestCase (do
   let query = SchemaQuery Places
-  result <- runQuery creds query
+  result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
-resolveResponseTest :: Credentials -> Test
-resolveResponseTest creds = TestCase (do
+resolveResponseTest :: Token -> Test
+resolveResponseTest token = TestCase (do
   let query = ResolveQuery [ResolveStr "name" "McDonalds"]
-  result <- runQuery creds query
+  result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
-crosswalkResponseTest :: Credentials -> Test
-crosswalkResponseTest creds = TestCase (do
+crosswalkResponseTest :: Token -> Test
+crosswalkResponseTest token = TestCase (do
   let query = C.CrosswalkQuery { C.factualId = Just "97598010-433f-4946-8fd5-4a6dd1639d77"
                                    , C.limit = Nothing
                                    , C.namespace = Nothing
                                    , C.namespaceId = Nothing
                                    , C.only = ["loopt"] }
-  result <- runQuery creds query
+  result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
 blankReadQuery :: ReadQuery

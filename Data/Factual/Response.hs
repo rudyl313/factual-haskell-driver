@@ -11,6 +11,9 @@ module Data.Factual.Response
   , lookupNumber
   , lookupString
   , lookupValue
+  , lookupValueSafe
+    -- * Aeson Value type
+  , Value
   ) where
 
 import Data.Maybe (fromJust)
@@ -35,22 +38,33 @@ fromValue value = Response { status = lookupString "status" value
                            , version = lookupNumber "version" value
                            , response = lookupValue "response" value }
 
+-- | This function can be used to convert an Aeson Array value into a vanilla
+--   list.
 toList :: Value -> [Value]
 toList (Array a) = V.toList a
 toList v         = [v]
 
+-- | This function can be used to extract a Double from an Aeson Object
+--   (HashMap) value.
 lookupNumber :: String -> Value -> Double
 lookupNumber key hashmap = extractNumber $ lookupValue key hashmap
 
+-- | This function can be used to extract a String from an Aeson Object
+--   (HashMap) value.
 lookupString :: String -> Value -> String
 lookupString key hashmap = extractString $ lookupValue key hashmap
 
+-- | This function can be used to extract any Aeson value from an Aeson Object
+--   (HashMap) value.
 lookupValue :: String -> Value -> Value
 lookupValue key hashmap = fromJust $ lookupValueSafe key hashmap
 
+-- | This function can be used to safely extract any Aeson value from an Aeson
+--    Object (HashMap) value.
 lookupValueSafe :: String -> Value -> Maybe Value
 lookupValueSafe key (Object x) = L.lookup (T.pack key) x
 
+-- The following helper functions aid the lookup functions.
 extractString :: Value -> String
 extractString (String x) = T.unpack x
 

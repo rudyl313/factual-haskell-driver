@@ -1,4 +1,13 @@
-module Network.Factual.API (runQuery) where
+-- | This module exports functions which are used to execute queries and handle
+--   the OAuth authentication process.
+module Network.Factual.API
+  (
+    -- * API functions
+    makeRequest
+  , generateToken
+    -- * The hoauth Token type
+  , Token(..)
+  ) where
 
 import Data.Maybe (fromJust)
 import Network.OAuth.Consumer
@@ -10,17 +19,22 @@ import Data.Factual.Query
 import Data.Factual.Credentials
 import qualified Data.Factual.Response as F
 
-runQuery :: (Query query) => Credentials -> query -> IO F.Response
-runQuery credentials query = do
-  let token = generateToken credentials
+-- | This function takes an OAuth token and a query (which is member of the
+--   Query typeclass and returns an IO action which will fetch a response from
+--   the Factual API.
+makeRequest :: (Query query) => Token -> query -> IO F.Response
+makeRequest token query = do
   let fullpath = "http://api.v3.factual.com" ++ toPath query
   let request = generateRequest fullpath
   response <- runOAuthM token $ setupOAuth request
   return $ F.fromValue $ extractJSON response
 
+-- | This function takes a set of credentials and returns an OAuth token that
+--   can be used to make requests.
 generateToken :: Credentials -> Token
 generateToken (Credentials key secret) = fromApplication $ Application key secret OOB
 
+-- The following helper functions aid the exported API functions
 generateRequest :: String -> Request
 generateRequest = fromJust . parseURL
 
