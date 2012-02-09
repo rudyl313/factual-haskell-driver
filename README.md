@@ -46,4 +46,12 @@ This is a Haskell driver for [Factual's public API](http://developer.factual.com
 
 # Examples
 
-   See the examples directory for examples of each query type.
+    See the examples directory for examples of each query type. To
+    run an example go to the project root and execute these commands:
+
+    $ ghc -o example examples/ReadExample.hs --make
+    $ ./example mykey mysecret
+
+    In this example replace mykey with your key and mysecret with your
+    secret. Note that compiling the source code generates .o and .hi
+    files in the source directories.
