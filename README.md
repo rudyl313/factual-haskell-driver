@@ -18,6 +18,7 @@ platform to install ghc and The Haskell Platform.
     $ cabal install aeson
 
 Note you may require libcurl to install hoauth. On lucid you can run:
+
     $ sudo apt-get install libcurl4-openssl-dev
 
 ## Installation from cabal
@@ -27,6 +28,7 @@ Note you may require libcurl to install hoauth. On lucid you can run:
 # Tests
 
 Load the tests file into ghci to run the tests:
+
     $ ghci test/Tests.hs
 
 To run the response tests you'll need an API key and secret, but you
