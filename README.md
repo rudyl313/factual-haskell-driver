@@ -13,7 +13,7 @@ This is a Haskell driver for [Factual's public API](http://developer.factual.com
 
 ## Installation from git
 
-    $ git clone git@github.com:rudyl313/factual-haskell-api.git
+    $ git clone git@github.com:rudyl313/factual-haskell-driver.git
     $ cabal install hoauth
     $ cabal install aeson
 

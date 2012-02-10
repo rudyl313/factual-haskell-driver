@@ -10,8 +10,8 @@ stability:       experimental
 tested-with:     GHC == 7.0.4
 synopsis:        A driver for the Factual API
 cabal-version:   >= 1.10
-homepage:        https://github.com/rudyl313/factual-haskell-api
-bug-reports:     https://github.com/rudyl313/factual-haskell-api/issues
+homepage:        https://github.com/rudyl313/factual-haskell-driver
+bug-reports:     https://github.com/rudyl313/factual-haskell-driver/issues
 build-type:      Simple
 description:
     This is a driver for the Factual API. It provides a typesafe way
@@ -46,4 +46,4 @@ library
 
 source-repository head
   type:     git
-  location: git://github.com/rudyl313/factual-haskel-api.git
+  location: git://github.com/rudyl313/factual-haskel-driver.git
