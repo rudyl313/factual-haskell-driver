@@ -1,5 +1,5 @@
 name:            factual-api
-version:         0.1.0
+version:         0.1.1
 license:         BSD3
 license-file:    LICENSE.txt
 category:        API, Web
@@ -41,8 +41,12 @@ library
 
   build-depends:
     aeson >= 0.6.0.0,
+    attoparsec >= 0.10.1.0,
     base == 4.*,
-    hoauth >= 0.3.3
+    hoauth >= 0.3.3,
+    text >= 0.11.1.5,
+    unordered-containers >= 0.1.4.6,
+    vector >= 0.9.1
 
 source-repository head
   type:     git
