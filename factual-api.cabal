@@ -14,9 +14,9 @@ homepage:        https://github.com/rudyl313/factual-haskell-driver
 bug-reports:     https://github.com/rudyl313/factual-haskell-driver/issues
 build-type:      Simple
 description:
-    This is a driver for the Factual API. It provides a typesafe way
-    generate queries, an easy way to setup OAuth authentication and
-    a simple way to send queries to the API.
+    This is a driver for the Factual API. It provides a typesafe way to
+    generate queries, an easy way to setup OAuth authentication and a
+    simple way to send queries to the API.
 
 extra-source-files:
     README.md
