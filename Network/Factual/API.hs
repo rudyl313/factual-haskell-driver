@@ -11,7 +11,7 @@ module Network.Factual.API
 
 import Data.Maybe (fromJust)
 import Network.OAuth.Consumer
-import Network.OAuth.Http.Request (Request, parseURL)
+import Network.OAuth.Http.Request (Request(..), parseURL, fromList)
 import Network.OAuth.Http.Response (Response(..))
 import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
 import Data.Aeson (Value, decode)
@@ -36,7 +36,7 @@ generateToken (Credentials key secret) = fromApplication $ Application key secre
 
 -- The following helper functions aid the exported API functions
 generateRequest :: String -> Request
-generateRequest = fromJust . parseURL
+generateRequest url = (fromJust $ parseURL url) { reqHeaders = (fromList headersList) }
 
 setupOAuth :: Request -> OAuthMonadT IO Response
 setupOAuth request = do
@@ -45,3 +45,6 @@ setupOAuth request = do
 
 extractJSON :: Response -> Value
 extractJSON = fromJust . decode . rspPayload
+
+headersList :: [(String, String)]
+headersList = [("X-Factual-Lib", "factual-haskell-driver-0.1.2")]
