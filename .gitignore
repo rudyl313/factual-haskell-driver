@@ -2,3 +2,4 @@
 cookbooks/**/*
 Vagrantfile
 main
+dist/*
