@@ -4,6 +4,7 @@ module Network.Factual.API
   (
     -- * API functions
     makeRequest
+  , makeRawRequest
   , generateToken
     -- * The hoauth Token type
   , Token(..)
@@ -23,8 +24,13 @@ import qualified Data.Factual.Response as F
 --   Query typeclass and returns an IO action which will fetch a response from
 --   the Factual API.
 makeRequest :: (Query query) => Token -> query -> IO F.Response
-makeRequest token query = do
-  let fullpath = "http://api.v3.factual.com" ++ toPath query
+makeRequest token query = makeRawRequest token (toPath query)
+
+-- | This function can be used to make raw read requests for any path. You pass
+--   in your Token and the path of your request (e.g. \"\/t\/places?q=starbucks\")
+makeRawRequest :: Token -> String -> IO F.Response
+makeRawRequest token queryString = do
+  let fullpath = "http://api.v3.factual.com" ++ queryString
   let request = generateRequest fullpath
   response <- runOAuthM token $ setupOAuth request
   return $ F.fromValue $ extractJSON response

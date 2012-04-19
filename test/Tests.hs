@@ -14,43 +14,44 @@ runQueryTests = runTestTT queryTests
 runResponseTests key secret = runTestTT $ responseTests (Credentials key secret)
 
 queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
-                 , TestLabel "Restaurants table test" restaurantsTablePathTest
-                 , TestLabel "Global table test" globalTablePathTest
-                 , TestLabel "And search test" andSearchPathTest
-                 , TestLabel "Or search test" orSearchPathTest
-                 , TestLabel "Select test" selectPathTest
-                 , TestLabel "Limit test" limitPathTest
-                 , TestLabel "Offset test" offsetPathTest
-                 , TestLabel "Equal number filter test" equalNumFilterTest
-                 , TestLabel "Equal string filter test" equalStrFilterTest
-                 , TestLabel "Not equal number filter test" notEqualNumFilterTest
-                 , TestLabel "Not equal string filter test" notEqualStrFilterTest
-                 , TestLabel "In number list filter test" inNumListFilterTest
-                 , TestLabel "In string list filter test" inStrListFilterTest
-                 , TestLabel "Not in number list filter test" notInNumListFilterTest
-                 , TestLabel "Not in string list filter test" notInStrListFilterTest
-                 , TestLabel "Begins with filter test" beginsWithFilterTest
-                 , TestLabel "Not begins with filter test" notBeginsWithFilterTest
-                 , TestLabel "Begins with any filter test" beginsWithAnyFilterTest
-                 , TestLabel "Not begins with any filter test" notBeginsWithAnyFilterTest
-                 , TestLabel "Is blank filter test" isBlankFilterTest
-                 , TestLabel "Is not blank filter test" isNotBlankFilterTest
-                 , TestLabel "And filter test" andFilterTest
-                 , TestLabel "Or filter test" andFilterTest
-                 , TestLabel "Geo test" geoTest
-                 , TestLabel "Include count test" includeCountTest
-                 , TestLabel "Schema query test" schemaQueryTest
-                 , TestLabel "Resolve query test" resolveQueryTest
-                 , TestLabel "Factual ID test" factualIdTest
-                 , TestLabel "Crosswalk limit test" limitCWPathTest
-                 , TestLabel "Namespace test" namespaceTest
-                 , TestLabel "Namespace ID test" namespaceIdTest
-                 , TestLabel "Only test" onlyTest ]
+                      , TestLabel "Restaurants table test" restaurantsTablePathTest
+                      , TestLabel "Global table test" globalTablePathTest
+                      , TestLabel "And search test" andSearchPathTest
+                      , TestLabel "Or search test" orSearchPathTest
+                      , TestLabel "Select test" selectPathTest
+                      , TestLabel "Limit test" limitPathTest
+                      , TestLabel "Offset test" offsetPathTest
+                      , TestLabel "Equal number filter test" equalNumFilterTest
+                      , TestLabel "Equal string filter test" equalStrFilterTest
+                      , TestLabel "Not equal number filter test" notEqualNumFilterTest
+                      , TestLabel "Not equal string filter test" notEqualStrFilterTest
+                      , TestLabel "In number list filter test" inNumListFilterTest
+                      , TestLabel "In string list filter test" inStrListFilterTest
+                      , TestLabel "Not in number list filter test" notInNumListFilterTest
+                      , TestLabel "Not in string list filter test" notInStrListFilterTest
+                      , TestLabel "Begins with filter test" beginsWithFilterTest
+                      , TestLabel "Not begins with filter test" notBeginsWithFilterTest
+                      , TestLabel "Begins with any filter test" beginsWithAnyFilterTest
+                      , TestLabel "Not begins with any filter test" notBeginsWithAnyFilterTest
+                      , TestLabel "Is blank filter test" isBlankFilterTest
+                      , TestLabel "Is not blank filter test" isNotBlankFilterTest
+                      , TestLabel "And filter test" andFilterTest
+                      , TestLabel "Or filter test" andFilterTest
+                      , TestLabel "Geo test" geoTest
+                      , TestLabel "Include count test" includeCountTest
+                      , TestLabel "Schema query test" schemaQueryTest
+                      , TestLabel "Resolve query test" resolveQueryTest
+                      , TestLabel "Factual ID test" factualIdTest
+                      , TestLabel "Crosswalk limit test" limitCWPathTest
+                      , TestLabel "Namespace test" namespaceTest
+                      , TestLabel "Namespace ID test" namespaceIdTest
+                      , TestLabel "Only test" onlyTest ]
 
 responseTests creds = TestList [ TestLabel "Read test" (readResponseTest token)
                                , TestLabel "Schema test" (schemaResponseTest token)
                                , TestLabel "Resolve test" (resolveResponseTest token)
-                               , TestLabel "Crosswalk test" (crosswalkResponseTest token) ]
+                               , TestLabel "Crosswalk test" (crosswalkResponseTest token)
+                               , TestLabel "Raw read test" (rawResponseTest token) ]
                     where token = generateToken creds
 
 placeTablePathTest = TestCase (do
@@ -251,6 +252,11 @@ crosswalkResponseTest token = TestCase (do
                                    , C.namespaceId = Nothing
                                    , C.only = ["loopt"] }
   result <- makeRequest token query
+  assertEqual "Valid read query" "ok" (status result))
+
+rawResponseTest :: Token -> Test
+rawResponseTest token = TestCase (do
+  result <- makeRawRequest token "/t/places?q=starbucks"
   assertEqual "Valid read query" "ok" (status result))
 
 blankReadQuery :: ReadQuery
