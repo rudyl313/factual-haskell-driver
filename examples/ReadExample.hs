@@ -4,6 +4,9 @@ import System (getArgs)
 import Network.Factual.API
 import Data.Factual.Credentials
 import Data.Factual.Shared.Table
+import Data.Factual.Shared.Search
+import Data.Factual.Shared.Geo
+import Data.Factual.Shared.Filter
 import Data.Factual.Query.ReadQuery
 import Data.Factual.Response
 
