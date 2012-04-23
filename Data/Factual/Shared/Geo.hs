@@ -1,5 +1,5 @@
 -- | This module exports the Geo type used to create read and facet queries.
-module Data.Factual.Geo
+module Data.Factual.Shared.Geo
   (
     -- * Geo type
     Lat

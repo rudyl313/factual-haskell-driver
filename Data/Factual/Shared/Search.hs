@@ -1,5 +1,5 @@
 -- | This module exports the Search type used to create read and facet queries.
-module Data.Factual.Search
+module Data.Factual.Shared.Search
   (
     -- * Search type
     Search(..)

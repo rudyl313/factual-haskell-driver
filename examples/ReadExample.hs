@@ -3,8 +3,8 @@ module Main where
 import System (getArgs)
 import Network.Factual.API
 import Data.Factual.Credentials
-import Data.Factual.Table
-import Data.Factual.ReadQuery
+import Data.Factual.Shared.Table
+import Data.Factual.Query.ReadQuery
 import Data.Factual.Response
 
 main :: IO()

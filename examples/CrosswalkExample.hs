@@ -3,8 +3,8 @@ module Main where
 import System (getArgs)
 import Network.Factual.API
 import Data.Factual.Credentials
-import Data.Factual.Table
-import Data.Factual.CrosswalkQuery
+import Data.Factual.Shared.Table
+import Data.Factual.Query.CrosswalkQuery
 import Data.Factual.Response
 
 main :: IO()

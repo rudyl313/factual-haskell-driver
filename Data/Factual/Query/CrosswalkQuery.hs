@@ -1,5 +1,5 @@
 -- | This module exports the type used to create crosswalk queries.
-module Data.Factual.CrosswalkQuery
+module Data.Factual.Query.CrosswalkQuery
   (
    -- * CrosswalkQuery type
    CrosswalkQuery(..)

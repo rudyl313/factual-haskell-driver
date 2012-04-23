@@ -1,12 +1,12 @@
 -- | This module exports the types used to create contributions.
-module Data.Factual.Contribute
+module Data.Factual.Write.Contribute
   (
     -- * Contribute type
     Contribute
   ) where
 
 import Data.Factual.Write
-import Data.Factual.Table
+import Data.Factual.Shared.Table
 import Data.Maybe (fromJust)
 import Data.Factual.Utils
 import qualified Data.Map as M

@@ -1,5 +1,5 @@
 -- | This module exports the types used to create flag writes.
-module Data.Factual.Flag
+module Data.Factual.Write.Flag
   (
     -- * Flag type
     Flag(..)
@@ -8,7 +8,7 @@ module Data.Factual.Flag
   ) where
 
 import Data.Factual.Write
-import Data.Factual.Table
+import Data.Factual.Shared.Table
 import Data.Maybe (fromJust)
 
 -- | A Problem represents what is wrong with the row being flagged

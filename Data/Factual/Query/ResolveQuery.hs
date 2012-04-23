@@ -1,5 +1,5 @@
 -- | This module exports the type used to create resolve queries.
-module Data.Factual.ResolveQuery
+module Data.Factual.Query.ResolveQuery
   (
     -- * ResolveQuery type
     ResolveQuery(..)

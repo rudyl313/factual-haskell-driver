@@ -1,12 +1,12 @@
 -- | This module exports the type used to create schema queries.
-module Data.Factual.SchemaQuery
+module Data.Factual.Query.SchemaQuery
   (
     -- * SchemaQuery type
     SchemaQuery(..)
   ) where
 
 import Data.Factual.Query
-import Data.Factual.Table
+import Data.Factual.Shared.Table
 
 -- | A schema query is formed by simply supplying a Table to the value
 --   constructor.

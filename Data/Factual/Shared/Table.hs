@@ -1,6 +1,6 @@
 -- | This module exports the type used to represent a table for the read or
 --   schema query types.
-module Data.Factual.Table
+module Data.Factual.Shared.Table
   (
      -- * Table type
      Table(..)

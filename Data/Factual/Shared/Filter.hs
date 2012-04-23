@@ -1,5 +1,5 @@
 -- | This module exports the Filter type used to create read and facet queries.
-module Data.Factual.Filter
+module Data.Factual.Shared.Filter
   (
     -- * Filter type
     Field

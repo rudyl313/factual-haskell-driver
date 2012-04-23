@@ -1,15 +1,15 @@
 -- | This module exports the types used to create read queries.
-module Data.Factual.ReadQuery
+module Data.Factual.Query.ReadQuery
   (
     -- * ReadQuery type
     ReadQuery(..)
   ) where
 
 import Data.Factual.Query
-import Data.Factual.Table
-import Data.Factual.Search
-import Data.Factual.Filter
-import Data.Factual.Geo
+import Data.Factual.Shared.Table
+import Data.Factual.Shared.Search
+import Data.Factual.Shared.Filter
+import Data.Factual.Shared.Geo
 import Data.Factual.Utils
 
 -- | The ReadQuery type is used to construct read queries. A table should be
