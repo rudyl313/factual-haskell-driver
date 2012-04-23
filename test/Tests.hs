@@ -1,15 +1,10 @@
 import Test.HUnit
 import Network.Factual.API
 import Data.Factual.Query
-import Data.Factual.Shared.Table
-import Data.Factual.Shared.Search
-import Data.Factual.Shared.Filter
-import Data.Factual.Shared.Geo
 import Data.Factual.Query.ReadQuery
 import Data.Factual.Query.SchemaQuery
 import Data.Factual.Query.ResolveQuery
 import Data.Factual.Response
-import Data.Factual.Credentials
 import qualified Data.Factual.Query.CrosswalkQuery as C
 
 runQueryTests = runTestTT queryTests

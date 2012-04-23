@@ -3,6 +3,11 @@ module Data.Factual.Query.ReadQuery
   (
     -- * ReadQuery type
     ReadQuery(..)
+    -- Required modules
+  , module Data.Factual.Shared.Table
+  , module Data.Factual.Shared.Search
+  , module Data.Factual.Shared.Filter
+  , module Data.Factual.Shared.Geo
   ) where
 
 import Data.Factual.Query

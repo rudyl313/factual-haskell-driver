@@ -11,6 +11,8 @@ module Network.Factual.API
   , sendWrite
     -- * The hoauth Token type
   , Token(..)
+    -- Required modules
+  , module Data.Factual.Credentials
   ) where
 
 import Data.Maybe (fromJust)

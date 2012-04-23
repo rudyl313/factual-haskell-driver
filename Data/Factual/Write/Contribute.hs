@@ -3,6 +3,8 @@ module Data.Factual.Write.Contribute
   (
     -- * Contribute type
     Contribute
+    -- Required modules
+  , module Data.Factual.Shared.Table
   ) where
 
 import Data.Factual.Write

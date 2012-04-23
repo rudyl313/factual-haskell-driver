@@ -2,8 +2,6 @@ module Main where
 
 import System (getArgs)
 import Network.Factual.API
-import Data.Factual.Credentials
-import Data.Factual.Shared.Table
 import Data.Factual.Query.SchemaQuery
 import Data.Factual.Response
 

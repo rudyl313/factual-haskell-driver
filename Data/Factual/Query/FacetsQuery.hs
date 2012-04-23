@@ -3,13 +3,18 @@ module Data.Factual.Query.FacetsQuery
   (
     -- * FacetsQuery type
     FacetsQuery(..)
+    -- Required modules
+  , module Data.Factual.Shared.Table
+  , module Data.Factual.Shared.Search
+  , module Data.Factual.Shared.Filter
+  , module Data.Factual.Shared.Geo
   ) where
 
 import Data.Factual.Query
-import Data.Factual.Table
-import Data.Factual.Search
-import Data.Factual.Filter
-import Data.Factual.Geo
+import Data.Factual.Shared.Table
+import Data.Factual.Shared.Search
+import Data.Factual.Shared.Filter
+import Data.Factual.Shared.Geo
 import Data.Factual.Utils
 
 -- | The FacetsQuery type is used to construct facets queries. A table and search
