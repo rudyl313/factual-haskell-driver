@@ -4,6 +4,9 @@ module Data.Factual.Utils
     -- * Utility methods
     join
   , joinAndFilter
+  , selectString
+  , limitString
+  , includeCountString
   ) where
 
 import Data.List (intersperse)
@@ -18,3 +21,16 @@ join delim xs = concat (intersperse delim xs)
 --   Strings with an & character. The use case is forming query path Strings.
 joinAndFilter :: [String] -> String
 joinAndFilter strs = join "&" $ filter ("" /=) strs
+
+-- The following helper functions are used in generating query Strings.
+selectString :: [String] -> String
+selectString []      = ""
+selectString selects = "select=" ++ (join "," selects)
+
+limitString :: Maybe Int -> String
+limitString (Just x) = "limit=" ++ show x
+limitString Nothing = ""
+
+includeCountString :: Bool -> String
+includeCountString True = "include_count=true"
+includeCountString False = "include_count=false"

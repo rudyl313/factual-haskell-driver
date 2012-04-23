@@ -2,6 +2,9 @@ import Test.HUnit
 import Network.Factual.API
 import Data.Factual.Query
 import Data.Factual.Table
+import Data.Factual.Search
+import Data.Factual.Filter
+import Data.Factual.Geo
 import Data.Factual.ReadQuery
 import Data.Factual.SchemaQuery
 import Data.Factual.ResolveQuery

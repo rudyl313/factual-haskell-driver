@@ -35,10 +35,6 @@ factualIdString :: Maybe String -> String
 factualIdString (Just id) = "factual_id=" ++ id
 factualIdString Nothing   = ""
 
-limitString :: Maybe Int -> String
-limitString (Just lim) = "limit=" ++ (show lim)
-limitString Nothing    = ""
-
 namespaceString :: Maybe String -> String
 namespaceString (Just namespace) = "namespace=" ++ namespace
 namespaceString Nothing          = ""

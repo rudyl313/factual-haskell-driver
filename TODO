@@ -1,2 +1,7 @@
-Facets
-Testing, Examples, Documentation
+Refactor growing Data.Factual module collection
+Attempt to reduce the number of modules required for usage
+Update Tests
+Update Examples
+Update Docs
+Update cabal file
+Release

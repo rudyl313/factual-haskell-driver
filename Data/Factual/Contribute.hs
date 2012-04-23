@@ -8,7 +8,7 @@ module Data.Factual.Contribute
 import Data.Factual.Write
 import Data.Factual.Table
 import Data.Maybe (fromJust)
-import Data.List (intersperse)
+import Data.Factual.Utils
 import qualified Data.Map as M
 
 -- | The Contribute type represents a Write to the API which performs an upsert
@@ -40,6 +40,3 @@ valuesString :: M.Map String String -> String
 valuesString values = "{" ++ join "," (map valueString $ M.keys values) ++ "}"
   where valueString key = "\"" ++ key ++ "\":\"" ++
                           (fromJust $ M.lookup key values) ++ "\""
-
-join :: String -> [String] -> String
-join delim list = concat (intersperse delim list)
