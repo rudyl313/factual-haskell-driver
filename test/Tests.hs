@@ -7,50 +7,50 @@ import Data.Factual.Query.ResolveQuery
 import Data.Factual.Response
 import qualified Data.Factual.Query.CrosswalkQuery as C
 
-runQueryTests = runTestTT queryTests
+runUnitTests = runTestTT unitTests
 
-runResponseTests key secret = runTestTT $ responseTests (Credentials key secret)
+runIntegrationTests key secret = runTestTT $ integrationTests (Credentials key secret)
 
-queryTests = TestList [ TestLabel "Place table test" placeTablePathTest
-                      , TestLabel "Restaurants table test" restaurantsTablePathTest
-                      , TestLabel "Global table test" globalTablePathTest
-                      , TestLabel "And search test" andSearchPathTest
-                      , TestLabel "Or search test" orSearchPathTest
-                      , TestLabel "Select test" selectPathTest
-                      , TestLabel "Limit test" limitPathTest
-                      , TestLabel "Offset test" offsetPathTest
-                      , TestLabel "Equal number filter test" equalNumFilterTest
-                      , TestLabel "Equal string filter test" equalStrFilterTest
-                      , TestLabel "Not equal number filter test" notEqualNumFilterTest
-                      , TestLabel "Not equal string filter test" notEqualStrFilterTest
-                      , TestLabel "In number list filter test" inNumListFilterTest
-                      , TestLabel "In string list filter test" inStrListFilterTest
-                      , TestLabel "Not in number list filter test" notInNumListFilterTest
-                      , TestLabel "Not in string list filter test" notInStrListFilterTest
-                      , TestLabel "Begins with filter test" beginsWithFilterTest
-                      , TestLabel "Not begins with filter test" notBeginsWithFilterTest
-                      , TestLabel "Begins with any filter test" beginsWithAnyFilterTest
-                      , TestLabel "Not begins with any filter test" notBeginsWithAnyFilterTest
-                      , TestLabel "Is blank filter test" isBlankFilterTest
-                      , TestLabel "Is not blank filter test" isNotBlankFilterTest
-                      , TestLabel "And filter test" andFilterTest
-                      , TestLabel "Or filter test" andFilterTest
-                      , TestLabel "Geo test" geoTest
-                      , TestLabel "Include count test" includeCountTest
-                      , TestLabel "Schema query test" schemaQueryTest
-                      , TestLabel "Resolve query test" resolveQueryTest
-                      , TestLabel "Factual ID test" factualIdTest
-                      , TestLabel "Crosswalk limit test" limitCWPathTest
-                      , TestLabel "Namespace test" namespaceTest
-                      , TestLabel "Namespace ID test" namespaceIdTest
-                      , TestLabel "Only test" onlyTest ]
+unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
+                     , TestLabel "Restaurants table test" restaurantsTablePathTest
+                     , TestLabel "Global table test" globalTablePathTest
+                     , TestLabel "And search test" andSearchPathTest
+                     , TestLabel "Or search test" orSearchPathTest
+                     , TestLabel "Select test" selectPathTest
+                     , TestLabel "Limit test" limitPathTest
+                     , TestLabel "Offset test" offsetPathTest
+                     , TestLabel "Equal number filter test" equalNumFilterTest
+                     , TestLabel "Equal string filter test" equalStrFilterTest
+                     , TestLabel "Not equal number filter test" notEqualNumFilterTest
+                     , TestLabel "Not equal string filter test" notEqualStrFilterTest
+                     , TestLabel "In number list filter test" inNumListFilterTest
+                     , TestLabel "In string list filter test" inStrListFilterTest
+                     , TestLabel "Not in number list filter test" notInNumListFilterTest
+                     , TestLabel "Not in string list filter test" notInStrListFilterTest
+                     , TestLabel "Begins with filter test" beginsWithFilterTest
+                     , TestLabel "Not begins with filter test" notBeginsWithFilterTest
+                     , TestLabel "Begins with any filter test" beginsWithAnyFilterTest
+                     , TestLabel "Not begins with any filter test" notBeginsWithAnyFilterTest
+                     , TestLabel "Is blank filter test" isBlankFilterTest
+                     , TestLabel "Is not blank filter test" isNotBlankFilterTest
+                     , TestLabel "And filter test" andFilterTest
+                     , TestLabel "Or filter test" andFilterTest
+                     , TestLabel "Geo test" geoTest
+                     , TestLabel "Include count test" includeCountTest
+                     , TestLabel "Schema query test" schemaQueryTest
+                     , TestLabel "Resolve query test" resolveQueryTest
+                     , TestLabel "Factual ID test" factualIdTest
+                     , TestLabel "Crosswalk limit test" limitCWPathTest
+                     , TestLabel "Namespace test" namespaceTest
+                     , TestLabel "Namespace ID test" namespaceIdTest
+                     , TestLabel "Only test" onlyTest ]
 
-responseTests creds = TestList [ TestLabel "Read test" (readResponseTest token)
-                               , TestLabel "Schema test" (schemaResponseTest token)
-                               , TestLabel "Resolve test" (resolveResponseTest token)
-                               , TestLabel "Crosswalk test" (crosswalkResponseTest token)
-                               , TestLabel "Raw read test" (rawResponseTest token) ]
-                    where token = generateToken creds
+integrationTests creds = TestList [ TestLabel "Read test" (readIntegrationTest token)
+                                  , TestLabel "Schema test" (schemaIntegrationTest token)
+                                  , TestLabel "Resolve test" (resolveIntegrationTest token)
+                                  , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
+                                  , TestLabel "Raw read test" (rawIntegrationTest token) ]
+                       where token = generateToken creds
 
 placeTablePathTest = TestCase (do
   let expected = "/t/places/read?include_count=false"
@@ -217,8 +217,8 @@ onlyTest = TestCase (do
   let path = toPath $ blankCrosswalkQuery { C.only = ["yelp", "loopd"] }
   assertEqual "Correct path for a only" expected path)
 
-readResponseTest :: Token -> Test
-readResponseTest token = TestCase (do
+readIntegrationTest :: Token -> Test
+readIntegrationTest token = TestCase (do
   let query = ReadQuery { table = Places
                         , search = AndSearch ["McDonalds", "Burger King"]
                         , select = ["name"]
@@ -230,20 +230,20 @@ readResponseTest token = TestCase (do
   result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
-schemaResponseTest :: Token -> Test
-schemaResponseTest token = TestCase (do
+schemaIntegrationTest :: Token -> Test
+schemaIntegrationTest token = TestCase (do
   let query = SchemaQuery Places
   result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
-resolveResponseTest :: Token -> Test
-resolveResponseTest token = TestCase (do
+resolveIntegrationTest :: Token -> Test
+resolveIntegrationTest token = TestCase (do
   let query = ResolveQuery [ResolveStr "name" "McDonalds"]
   result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
-crosswalkResponseTest :: Token -> Test
-crosswalkResponseTest token = TestCase (do
+crosswalkIntegrationTest :: Token -> Test
+crosswalkIntegrationTest token = TestCase (do
   let query = C.CrosswalkQuery { C.factualId = Just "97598010-433f-4946-8fd5-4a6dd1639d77"
                                    , C.limit = Nothing
                                    , C.namespace = Nothing
@@ -252,8 +252,8 @@ crosswalkResponseTest token = TestCase (do
   result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
-rawResponseTest :: Token -> Test
-rawResponseTest token = TestCase (do
+rawIntegrationTest :: Token -> Test
+rawIntegrationTest token = TestCase (do
   result <- makeRawRequest token "/t/places?q=starbucks"
   assertEqual "Valid read query" "ok" (status result))
 
