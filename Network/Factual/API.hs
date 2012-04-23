@@ -42,8 +42,7 @@ makeRawRequest :: Token -> String -> IO F.Response
 makeRawRequest token queryString = do
   let fullpath = basePath ++ queryString
   let request = generateRequest fullpath
-  response <- runOAuthM token $ setupOAuth request
-  return $ F.fromValue $ extractJSON response
+  makeRequest' token request
 
 -- | This function takes an OAuth token and a Write and retunrs and IO action
 --   which sends the Write to API and returns a Response.
@@ -51,10 +50,14 @@ sendWrite :: (Write write) => Token -> write -> IO F.Response
 sendWrite token write = do
   let fullpath = basePath ++ path write
   let request = generatePostRequest fullpath (body write)
+  makeRequest' token request
+
+-- The following helper functions aid the exported API functions
+makeRequest' :: Token -> Request -> IO F.Response
+makeRequest' token request = do
   response <- runOAuthM token $ setupOAuth request
   return $ F.fromValue $ extractJSON response
 
--- The following helper functions aid the exported API functions
 generateRequest :: String -> Request
 generateRequest url = (fromJust $ parseURL url) { reqHeaders = (fromList headersList) }
 
