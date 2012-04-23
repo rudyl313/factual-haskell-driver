@@ -15,13 +15,14 @@ module Network.Factual.API
 
 import Data.Maybe (fromJust)
 import Network.OAuth.Consumer
-import Network.OAuth.Http.Request (Request(..), parseURL, fromList)
+import Network.OAuth.Http.Request (Request(..), Method(..), parseURL, fromList)
 import Network.OAuth.Http.Response (Response(..))
 import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
 import Data.Aeson (Value, decode)
 import Data.Factual.Query
 import Data.Factual.Write
 import Data.Factual.Credentials
+import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Factual.Response as F
 
 -- | This function takes a set of credentials and returns an OAuth token that
@@ -39,7 +40,7 @@ makeRequest token query = makeRawRequest token (toPath query)
 --   in your Token and the path of your request (e.g. \"\/t\/places?q=starbucks\")
 makeRawRequest :: Token -> String -> IO F.Response
 makeRawRequest token queryString = do
-  let fullpath = "http://api.v3.factual.com" ++ queryString
+  let fullpath = basePath ++ queryString
   let request = generateRequest fullpath
   response <- runOAuthM token $ setupOAuth request
   return $ F.fromValue $ extractJSON response
@@ -47,11 +48,21 @@ makeRawRequest token queryString = do
 -- | This function takes an OAuth token and a Write and retunrs and IO action
 --   which sends the Write to API and returns a Response.
 sendWrite :: (Write write) => Token -> write -> IO F.Response
-sendWrite token write = undefined
+sendWrite token write = do
+  let fullpath = basePath ++ path write
+  let request = generatePostRequest fullpath (body write)
+  response <- runOAuthM token $ setupOAuth request
+  return $ F.fromValue $ extractJSON response
 
 -- The following helper functions aid the exported API functions
 generateRequest :: String -> Request
 generateRequest url = (fromJust $ parseURL url) { reqHeaders = (fromList headersList) }
+
+generatePostRequest :: String -> String -> Request
+generatePostRequest url body = baseRequest { reqHeaders = (fromList headersList)
+                                           , method = POST
+                                           , reqPayload = B.pack body }
+  where baseRequest = (fromJust $ parseURL url)
 
 setupOAuth :: Request -> OAuthMonadT IO Response
 setupOAuth request = do
@@ -63,3 +74,6 @@ extractJSON = fromJust . decode . rspPayload
 
 headersList :: [(String, String)]
 headersList = [("X-Factual-Lib", "factual-haskell-driver-0.1.2")]
+
+basePath :: String
+basePath = "http://api.v3.factual.com"

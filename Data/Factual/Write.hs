@@ -8,5 +8,5 @@ module Data.Factual.Write
 --   the write url as a string and a body method which returns of the body
 --   of the write.
 class Write w where
-  url  :: w -> String
+  path :: w -> String
   body :: w -> String
