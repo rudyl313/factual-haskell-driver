@@ -12,6 +12,7 @@ module Data.Factual.Write.Flag
 import Data.Factual.Write
 import Data.Factual.Shared.Table
 import Data.Maybe (fromJust)
+import Data.Factual.Utils
 
 -- | A Problem represents what is wrong with the row being flagged
 data Problem = Duplicate
@@ -42,22 +43,22 @@ instance Write Flag where
   path flag = (show $ table flag) ++ (factualId flag) ++ "/flag"
   body flag = "problem=" ++ (show $ problem flag) ++ "&" ++
               "user=" ++ (user flag) ++ "&" ++
-              (commentString flag) ++
-              (debugString flag) ++
-              (referenceString flag)
+              joinAndFilter [ commentString flag
+                            , debugString flag
+                            , referenceString flag ]
 
 -- The following functions are helpers for the body function
 commentString :: Flag -> String
 commentString flag
   | comment flag == Nothing = ""
-  | otherwise               = "comment=" ++ (fromJust $ comment flag) ++ "&"
+  | otherwise               = "comment=" ++ (fromJust $ comment flag)
 
 debugString :: Flag -> String
 debugString flag
-  | debug flag == True = "debug=true&"
-  | otherwise          = "debug=false&"
+  | debug flag == True = "debug=true"
+  | otherwise          = "debug=false"
 
 referenceString :: Flag -> String
 referenceString flag
   | reference flag == Nothing = ""
-  | otherwise                 = "reference=" ++ (fromJust $ reference flag) ++ "&"
+  | otherwise                 = "reference=" ++ (fromJust $ reference flag)

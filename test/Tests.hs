@@ -5,7 +5,12 @@ import Data.Factual.Query.ReadQuery
 import Data.Factual.Query.SchemaQuery
 import Data.Factual.Query.ResolveQuery
 import Data.Factual.Response
+import qualified Data.Map as M
+import qualified Data.Factual.Write as W
 import qualified Data.Factual.Query.CrosswalkQuery as C
+import qualified Data.Factual.Query.FacetsQuery as F
+import qualified Data.Factual.Write.Contribute as T
+import qualified Data.Factual.Write.Flag as L
 
 runUnitTests = runTestTT unitTests
 
@@ -14,6 +19,7 @@ runIntegrationTests key secret = runTestTT $ integrationTests (Credentials key s
 unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Restaurants table test" restaurantsTablePathTest
                      , TestLabel "Global table test" globalTablePathTest
+                     , TestLabel "Custom table test" customTablePathTest
                      , TestLabel "And search test" andSearchPathTest
                      , TestLabel "Or search test" orSearchPathTest
                      , TestLabel "Select test" selectPathTest
@@ -43,7 +49,12 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Crosswalk limit test" limitCWPathTest
                      , TestLabel "Namespace test" namespaceTest
                      , TestLabel "Namespace ID test" namespaceIdTest
-                     , TestLabel "Only test" onlyTest ]
+                     , TestLabel "Only test" onlyTest
+                     , TestLabel "Facets test" facetsTest
+                     , TestLabel "Contribute path test" contributePathTest
+                     , TestLabel "Contribute body test" contributeBodyTest
+                     , TestLabel "Flag path test" flagPathTest
+                     , TestLabel "Flag body test" flagBodyTest ]
 
 integrationTests creds = TestList [ TestLabel "Read test" (readIntegrationTest token)
                                   , TestLabel "Schema test" (schemaIntegrationTest token)
@@ -66,6 +77,11 @@ globalTablePathTest = TestCase (do
   let expected = "/t/global/read?include_count=false"
   let path = toPath $ blankReadQuery { table = Global }
   assertEqual "Correct path for global table" expected path)
+
+customTablePathTest = TestCase (do
+  let expected = "/t/foo/read?include_count=false"
+  let path = toPath $ blankReadQuery { table = Custom "foo" }
+  assertEqual "Correct path for custom table" expected path)
 
 andSearchPathTest = TestCase (do
   let expected = "/t/places/read?q=foo bar&include_count=false"
@@ -217,6 +233,40 @@ onlyTest = TestCase (do
   let path = toPath $ blankCrosswalkQuery { C.only = ["yelp", "loopd"] }
   assertEqual "Correct path for a only" expected path)
 
+facetsTest = TestCase (do
+  let expected = "/t/places/facets?q=starbucks&select=locality,region&"
+               ++ "filters={\"country\":\"US\"}&limit=10&min_count=2&"
+               ++ "include_count=false"
+  let path = toPath $ F.FacetsQuery { F.table        = Places
+                                    , F.search       = AndSearch ["starbucks"]
+                                    , F.select       = ["locality", "region"]
+                                    , F.filters      = [EqualStr "country" "US"]
+                                    , F.geo          = Nothing
+                                    , F.limit        = Just 10
+                                    , F.minCount     = Just 2
+                                    , F.includeCount = False }
+  assertEqual "Correct path for a facets query" expected path)
+
+contributePathTest = TestCase (do
+  let expected = "/t/places/foobar/contribute"
+  let path = W.path contributeWrite
+  assertEqual "Correct path for contribute" expected path)
+
+contributeBodyTest = TestCase (do
+  let expected = "user=user123&values={\"key\":\"val\"}"
+  let body = W.body contributeWrite
+  assertEqual "Correct body for contribute" expected body)
+
+flagPathTest = TestCase (do
+  let expected = "/t/places/foobar/flag"
+  let path = W.path flagWrite
+  assertEqual "Correct path for flag" expected path)
+
+flagBodyTest = TestCase (do
+  let expected = "problem=Duplicate&user=user123&comment=There was a problem&debug=false"
+  let body = W.body flagWrite
+  assertEqual "Correct body for flag" expected body)
+
 readIntegrationTest :: Token -> Test
 readIntegrationTest token = TestCase (do
   let query = ReadQuery { table = Places
@@ -245,10 +295,10 @@ resolveIntegrationTest token = TestCase (do
 crosswalkIntegrationTest :: Token -> Test
 crosswalkIntegrationTest token = TestCase (do
   let query = C.CrosswalkQuery { C.factualId = Just "97598010-433f-4946-8fd5-4a6dd1639d77"
-                                   , C.limit = Nothing
-                                   , C.namespace = Nothing
-                                   , C.namespaceId = Nothing
-                                   , C.only = ["loopt"] }
+                               , C.limit = Nothing
+                               , C.namespace = Nothing
+                               , C.namespaceId = Nothing
+                               , C.only = ["loopt"] }
   result <- makeRequest token query
   assertEqual "Valid read query" "ok" (status result))
 
@@ -273,3 +323,18 @@ blankCrosswalkQuery = C.CrosswalkQuery { C.factualId = Nothing
                                        , C.namespace = Nothing
                                        , C.namespaceId = Nothing
                                        , C.only = [] }
+
+contributeWrite :: T.Contribute
+contributeWrite = T.Contribute { T.table     = Places
+                               , T.user      = "user123"
+                               , T.factualId = Just "foobar"
+                               , T.values    = M.fromList [("key", "val")] }
+
+flagWrite :: L.Flag
+flagWrite = L.Flag { L.table     = Places
+                   , L.factualId = "foobar"
+                   , L.problem   = L.Duplicate
+                   , L.user      = "user123"
+                   , L.comment   = Just "There was a problem"
+                   , L.debug     = False
+                   , L.reference = Nothing }
