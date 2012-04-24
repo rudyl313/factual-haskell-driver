@@ -60,7 +60,8 @@ integrationTests creds = TestList [ TestLabel "Read test" (readIntegrationTest t
                                   , TestLabel "Schema test" (schemaIntegrationTest token)
                                   , TestLabel "Resolve test" (resolveIntegrationTest token)
                                   , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
-                                  , TestLabel "Raw read test" (rawIntegrationTest token) ]
+                                  , TestLabel "Raw read test" (rawIntegrationTest token)
+                                  , TestLabel "Facets test" (facetsIntegrationTest token) ]
                        where token = generateToken creds
 
 placeTablePathTest = TestCase (do
@@ -284,13 +285,13 @@ schemaIntegrationTest :: Token -> Test
 schemaIntegrationTest token = TestCase (do
   let query = SchemaQuery Places
   result <- makeRequest token query
-  assertEqual "Valid read query" "ok" (status result))
+  assertEqual "Valid schema query" "ok" (status result))
 
 resolveIntegrationTest :: Token -> Test
 resolveIntegrationTest token = TestCase (do
   let query = ResolveQuery [ResolveStr "name" "McDonalds"]
   result <- makeRequest token query
-  assertEqual "Valid read query" "ok" (status result))
+  assertEqual "Valid resolve query" "ok" (status result))
 
 crosswalkIntegrationTest :: Token -> Test
 crosswalkIntegrationTest token = TestCase (do
@@ -300,12 +301,24 @@ crosswalkIntegrationTest token = TestCase (do
                                , C.namespaceId = Nothing
                                , C.only = ["loopt"] }
   result <- makeRequest token query
-  assertEqual "Valid read query" "ok" (status result))
+  assertEqual "Valid crosswalk query" "ok" (status result))
 
 rawIntegrationTest :: Token -> Test
 rawIntegrationTest token = TestCase (do
   result <- makeRawRequest token "/t/places?q=starbucks"
   assertEqual "Valid read query" "ok" (status result))
+
+facetsIntegrationTest token = TestCase (do
+  let query = F.FacetsQuery { F.table        = Places
+                            , F.search       = AndSearch ["Starbucks"]
+                            , F.select       = ["country"]
+                            , F.filters      = []
+                            , F.geo          = Nothing
+                            , F.limit        = Just 100
+                            , F.minCount     = Just 1
+                            , F.includeCount = False }
+  result <- makeRequest token query
+  assertEqual "Valid facets query" "ok" (status result))
 
 blankReadQuery :: ReadQuery
 blankReadQuery = ReadQuery { table = Places

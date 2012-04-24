@@ -36,10 +36,10 @@ can always run the unit tests:
 
     *Main> runUnitTests
     Cases: 39  Tried: 39  Errors: 0  Failures: 0
-    Counts {cases = 33, tried = 33, errors = 0, failures = 0}
+    Counts {cases = 39, tried = 39, errors = 0, failures = 0}
     *Main> runIntegrationTests "mykey" "mysecret"
-    Cases: 5  Tried: 5  Errors: 0  Failures: 0
-    Counts {cases = 5, tried = 5, errors = 0, failures = 0}
+    Cases: 6  Tried: 6  Errors: 0  Failures: 0
+    Counts {cases = 6, tried = 6, errors = 0, failures = 0}
 
 # Documentation
 
