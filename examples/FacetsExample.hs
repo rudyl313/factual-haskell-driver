@@ -10,7 +10,7 @@ main = do
   args <- getArgs
   let oauthKey = head args
   let oauthSecret = last args
-  let token = generateToken (Credentials oauthKey oauthSecret)
+  let token = generateToken oauthKey oauthSecret
   let query = FacetsQuery { table        = Places
                           , search       = AndSearch ["Starbucks"]
                           , select       = ["country"]

@@ -5,7 +5,7 @@ module Data.Factual.Write.Flag
     Flag(..)
     -- * Problem type
   , Problem(..)
-    -- Required modules
+    -- * Required modules
   , module Data.Factual.Shared.Table
   ) where
 

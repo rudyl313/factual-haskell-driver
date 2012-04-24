@@ -10,7 +10,7 @@ main = do
   args <- getArgs
   let oauthKey = head args
   let oauthSecret = last args
-  let token = generateToken (Credentials oauthKey oauthSecret)
+  let token = generateToken oauthKey oauthSecret
   let query = SchemaQuery Places
   result <- makeRequest token query
   putStrLn $ "Status: " ++ status result

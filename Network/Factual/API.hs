@@ -11,8 +11,6 @@ module Network.Factual.API
   , sendWrite
     -- * The hoauth Token type
   , Token(..)
-    -- Required modules
-  , module Data.Factual.Credentials
   ) where
 
 import Data.Maybe (fromJust)
@@ -23,14 +21,18 @@ import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
 import Data.Aeson (Value, decode)
 import Data.Factual.Query
 import Data.Factual.Write
-import Data.Factual.Credentials
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Factual.Response as F
 
+-- | The Key is the oauth key as a String.
+type Key = String
+-- | The Secret is the oauth secret as a String.
+type Secret = String
+
 -- | This function takes a set of credentials and returns an OAuth token that
 --   can be used to make requests.
-generateToken :: Credentials -> Token
-generateToken (Credentials key secret) = fromApplication $ Application key secret OOB
+generateToken :: Key -> Secret -> Token
+generateToken key secret = fromApplication $ Application key secret OOB
 
 -- | This function takes an OAuth token and a query (which is member of the
 --   Query typeclass) and returns an IO action which will fetch a response from

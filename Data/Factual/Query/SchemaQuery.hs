@@ -3,7 +3,7 @@ module Data.Factual.Query.SchemaQuery
   (
     -- * SchemaQuery type
     SchemaQuery(..)
-    -- Required modules
+    -- * Required modules
   , module Data.Factual.Shared.Table
   ) where
 

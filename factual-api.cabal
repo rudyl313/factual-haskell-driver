@@ -27,7 +27,6 @@ extra-source-files:
 library
   exposed-modules:
     Network.Factual.API
-    Data.Factual.Credentials
     Data.Factual.CrosswalkQuery
     Data.Factual.Query
     Data.Factual.ReadQuery

@@ -3,7 +3,7 @@ module Data.Factual.Query.FacetsQuery
   (
     -- * FacetsQuery type
     FacetsQuery(..)
-    -- Required modules
+    -- * Required modules
   , module Data.Factual.Shared.Table
   , module Data.Factual.Shared.Search
   , module Data.Factual.Shared.Filter

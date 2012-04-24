@@ -3,7 +3,7 @@ module Data.Factual.Write.Contribute
   (
     -- * Contribute type
     Contribute(..)
-    -- Required modules
+    -- * Required modules
   , module Data.Factual.Shared.Table
   ) where
 

@@ -14,7 +14,7 @@ import qualified Data.Factual.Write.Flag as L
 
 runUnitTests = runTestTT unitTests
 
-runIntegrationTests key secret = runTestTT $ integrationTests (Credentials key secret)
+runIntegrationTests key secret = runTestTT $ integrationTests key secret
 
 unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Restaurants table test" restaurantsTablePathTest
@@ -56,13 +56,13 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Flag path test" flagPathTest
                      , TestLabel "Flag body test" flagBodyTest ]
 
-integrationTests creds = TestList [ TestLabel "Read test" (readIntegrationTest token)
+integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationTest token)
                                   , TestLabel "Schema test" (schemaIntegrationTest token)
                                   , TestLabel "Resolve test" (resolveIntegrationTest token)
                                   , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
                                   , TestLabel "Raw read test" (rawIntegrationTest token)
                                   , TestLabel "Facets test" (facetsIntegrationTest token) ]
-                       where token = generateToken creds
+                       where token = generateToken key secret
 
 placeTablePathTest = TestCase (do
   let expected = "/t/places/read?include_count=false"
