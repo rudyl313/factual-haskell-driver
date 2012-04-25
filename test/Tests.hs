@@ -9,7 +9,7 @@ import qualified Data.Map as M
 import qualified Data.Factual.Write as W
 import qualified Data.Factual.Query.CrosswalkQuery as C
 import qualified Data.Factual.Query.FacetsQuery as F
-import qualified Data.Factual.Write.Contribute as T
+import qualified Data.Factual.Write.Submit as S
 import qualified Data.Factual.Write.Flag as L
 
 runUnitTests = runTestTT unitTests
@@ -51,8 +51,8 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Namespace ID test" namespaceIdTest
                      , TestLabel "Only test" onlyTest
                      , TestLabel "Facets test" facetsTest
-                     , TestLabel "Contribute path test" contributePathTest
-                     , TestLabel "Contribute body test" contributeBodyTest
+                     , TestLabel "Submit path test" submitPathTest
+                     , TestLabel "Submit body test" submitBodyTest
                      , TestLabel "Flag path test" flagPathTest
                      , TestLabel "Flag body test" flagBodyTest ]
 
@@ -62,7 +62,7 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                                   , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
                                   , TestLabel "Raw read test" (rawIntegrationTest token)
                                   , TestLabel "Facets test" (facetsIntegrationTest token) ]
-                       where token = generateToken key secret
+                            where token = generateToken key secret
 
 placeTablePathTest = TestCase (do
   let expected = "/t/places/read?include_count=false"
@@ -248,15 +248,15 @@ facetsTest = TestCase (do
                                     , F.includeCount = False }
   assertEqual "Correct path for a facets query" expected path)
 
-contributePathTest = TestCase (do
-  let expected = "/t/places/foobar/contribute"
-  let path = W.path contributeWrite
-  assertEqual "Correct path for contribute" expected path)
+submitPathTest = TestCase (do
+  let expected = "/t/places/foobar/submit"
+  let path = W.path submitWrite
+  assertEqual "Correct path for submit" expected path)
 
-contributeBodyTest = TestCase (do
+submitBodyTest = TestCase (do
   let expected = "user=user123&values={\"key\":\"val\"}"
-  let body = W.body contributeWrite
-  assertEqual "Correct body for contribute" expected body)
+  let body = W.body submitWrite
+  assertEqual "Correct body for submit" expected body)
 
 flagPathTest = TestCase (do
   let expected = "/t/places/foobar/flag"
@@ -337,11 +337,11 @@ blankCrosswalkQuery = C.CrosswalkQuery { C.factualId = Nothing
                                        , C.namespaceId = Nothing
                                        , C.only = [] }
 
-contributeWrite :: T.Contribute
-contributeWrite = T.Contribute { T.table     = Places
-                               , T.user      = "user123"
-                               , T.factualId = Just "foobar"
-                               , T.values    = M.fromList [("key", "val")] }
+submitWrite :: S.Submit
+submitWrite = S.Submit { S.table     = Places
+                       , S.user      = "user123"
+                       , S.factualId = Just "foobar"
+                       , S.values    = M.fromList [("key", "val")] }
 
 flagWrite :: L.Flag
 flagWrite = L.Flag { L.table     = Places

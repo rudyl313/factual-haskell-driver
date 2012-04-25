@@ -33,8 +33,8 @@ library
     Data.Factual.Query.ResolveQuery
     Data.Factual.Query.SchemaQuery
     Data.Factual.Write
-    Data.Factual.Write.Contribute
     Data.Factual.Write.Flag
+    Data.Factual.Write.Submit
     Data.Factual.Response
     Data.Factual.Shared.Filter
     Data.Factual.Shared.Geo
