@@ -20,7 +20,9 @@ type Radius = Double
 -- | The Geo type is used to limit the search to specific geograph location.
 --   Currently, only circles are supported. Supply a latitude, longitude and
 --   radius in meters for the circle.
-data Geo = Circle Lat Long Radius deriving Eq
+data Geo = Circle Lat Long Radius
+         | Point Lat Long
+         deriving Eq
 
 -- Geo is a member of Show to help generate query strings.
 instance Show Geo where
@@ -31,6 +33,11 @@ instance Show Geo where
                                 ++ "],\"$meters\":"
                                 ++ (show radius)
                                 ++ "}}"
+  show (Point lat long) = "{\"$point\":["
+                        ++ (show lat) 
+                        ++ ","
+                        ++ (show long)
+                        ++ "]}"
 
 -- Helper functions
 geoString :: Maybe Geo -> String
