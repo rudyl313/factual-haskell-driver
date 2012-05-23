@@ -29,6 +29,7 @@ library
     Data.Factual.Query
     Data.Factual.Query.CrosswalkQuery
     Data.Factual.Query.FacetsQuery
+    Data.Factual.Query.GeopulseQuery
     Data.Factual.Query.ReadQuery
     Data.Factual.Query.ResolveQuery
     Data.Factual.Query.SchemaQuery
