@@ -4,6 +4,7 @@ import Data.Factual.Query
 import Data.Factual.Query.ReadQuery
 import Data.Factual.Query.SchemaQuery
 import Data.Factual.Query.ResolveQuery
+import Data.Factual.Query.GeocodeQuery
 import Data.Factual.Response
 import qualified Data.Map as M
 import qualified Data.Factual.Write as W
@@ -22,6 +23,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Global table test" globalTablePathTest
                      , TestLabel "Custom table test" customTablePathTest
                      , TestLabel "Geopulse test" geopulsePathTest
+                     , TestLabel "Geocode test" geocodePathTest
                      , TestLabel "And search test" andSearchPathTest
                      , TestLabel "Or search test" orSearchPathTest
                      , TestLabel "Select test" selectPathTest
@@ -64,7 +66,8 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                                        , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
                                        , TestLabel "Raw read test" (rawIntegrationTest token)
                                        , TestLabel "Facets test" (facetsIntegrationTest token)
-                                       , TestLabel "Geopulse test" (geopulseIntegrationTest token) ]
+                                       , TestLabel "Geopulse test" (geopulseIntegrationTest token)
+                                       , TestLabel "Geocode test" (geocodeIntegrationTest token) ]
                             where token = generateToken key secret
 
 placeTablePathTest = TestCase (do
@@ -91,6 +94,11 @@ geopulsePathTest = TestCase (do
   let expected = "/places/geopulse?geo={\"$point\":[34.06021,-118.41828]}&select=commercial_density"
   let path = toPath $ G.GeopulseQuery { G.geo = Point 34.06021 (-118.41828) , G.select = ["commercial_density"] }
   assertEqual "Correct path for geopulse" expected path)
+
+geocodePathTest = TestCase (do
+  let expected = "/places/geocode?geo={\"$point\":[34.06021,-118.41828]}"
+  let path = toPath $ GeocodeQuery $ Point 34.06021 (-118.41828)
+  assertEqual "Correct path for geocode" expected path)
 
 andSearchPathTest = TestCase (do
   let expected = "/t/places/read?q=foo bar&include_count=false"
@@ -331,6 +339,11 @@ facetsIntegrationTest token = TestCase (do
 geopulseIntegrationTest token = TestCase (do
   let query = G.GeopulseQuery { G.geo    = Point 34.06021 (-118.41828)
                               , G.select = [] }
+  result <- makeRequest token query
+  assertEqual "Valid geopulse query" "ok" (status result))
+
+geocodeIntegrationTest token = TestCase (do
+  let query = GeocodeQuery $ Point 34.06021 (-118.41828)
   result <- makeRequest token query
   assertEqual "Valid geopulse query" "ok" (status result))
 
