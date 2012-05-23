@@ -48,7 +48,7 @@ library
     aeson >= 0.6.0.0,
     attoparsec >= 0.10.1.0,
     base == 4.*,
-    hoauth >= 0.3.3,
+    hoauth >= 0.3.0,
     text >= 0.11.1.5,
     unordered-containers >= 0.1.4.6,
     vector >= 0.9.1
