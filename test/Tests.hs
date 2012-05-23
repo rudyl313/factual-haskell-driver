@@ -9,6 +9,7 @@ import qualified Data.Map as M
 import qualified Data.Factual.Write as W
 import qualified Data.Factual.Query.CrosswalkQuery as C
 import qualified Data.Factual.Query.FacetsQuery as F
+import qualified Data.Factual.Query.GeopulseQuery as G
 import qualified Data.Factual.Write.Submit as S
 import qualified Data.Factual.Write.Flag as L
 
@@ -20,6 +21,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Restaurants table test" restaurantsTablePathTest
                      , TestLabel "Global table test" globalTablePathTest
                      , TestLabel "Custom table test" customTablePathTest
+                     , TestLabel "Geopulse test" geopulsePathTest
                      , TestLabel "And search test" andSearchPathTest
                      , TestLabel "Or search test" orSearchPathTest
                      , TestLabel "Select test" selectPathTest
@@ -57,11 +59,12 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Flag body test" flagBodyTest ]
 
 integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationTest token)
-                                  , TestLabel "Schema test" (schemaIntegrationTest token)
-                                  , TestLabel "Resolve test" (resolveIntegrationTest token)
-                                  , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
-                                  , TestLabel "Raw read test" (rawIntegrationTest token)
-                                  , TestLabel "Facets test" (facetsIntegrationTest token) ]
+                                       , TestLabel "Schema test" (schemaIntegrationTest token)
+                                       , TestLabel "Resolve test" (resolveIntegrationTest token)
+                                       , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
+                                       , TestLabel "Raw read test" (rawIntegrationTest token)
+                                       , TestLabel "Facets test" (facetsIntegrationTest token)
+                                       , TestLabel "Geopulse test" (geopulseIntegrationTest token) ]
                             where token = generateToken key secret
 
 placeTablePathTest = TestCase (do
@@ -83,6 +86,11 @@ customTablePathTest = TestCase (do
   let expected = "/t/foo/read?include_count=false"
   let path = toPath $ blankReadQuery { table = Custom "foo" }
   assertEqual "Correct path for custom table" expected path)
+
+geopulsePathTest = TestCase (do
+  let expected = "/places/geopulse?geo={\"$point\":[34.06021,-118.41828]}&select=commercial_density"
+  let path = toPath $ G.GeopulseQuery { G.geo = Point 34.06021 (-118.41828) , G.select = ["commercial_density"] }
+  assertEqual "Correct path for geopulse" expected path)
 
 andSearchPathTest = TestCase (do
   let expected = "/t/places/read?q=foo bar&include_count=false"
@@ -319,6 +327,12 @@ facetsIntegrationTest token = TestCase (do
                             , F.includeCount = False }
   result <- makeRequest token query
   assertEqual "Valid facets query" "ok" (status result))
+
+geopulseIntegrationTest token = TestCase (do
+  let query = G.GeopulseQuery { G.geo    = Point 34.06021 (-118.41828)
+                              , G.select = [] }
+  result <- makeRequest token query
+  assertEqual "Valid geopulse query" "ok" (status result))
 
 blankReadQuery :: ReadQuery
 blankReadQuery = ReadQuery { table = Places
