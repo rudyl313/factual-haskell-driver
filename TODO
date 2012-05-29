@@ -1,0 +1,8 @@
+Better error propagation
+Add addition tables to the Table type
+  /t/health-care-providers-us
+  /t/world-geographies
+  /t/products-cpg
+  /t/products-crosswalk
+Add support for mult calls
+Improve README
