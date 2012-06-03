@@ -14,6 +14,7 @@ module Network.Factual.API
   ) where
 
 import Data.Maybe (fromJust)
+import Data.List (intersperse)
 import Network.OAuth.Consumer
 import Network.OAuth.Http.Request (Request(..), Method(..), parseURL, fromList)
 import Network.OAuth.Http.Response (Response(..))
@@ -48,6 +49,14 @@ makeRawRequest token queryString = do
   let request = generateRequest fullpath
   makeRequest' token request
 
+-- | This function can be used to make multi queries. You pass in a list of names
+--   and a list of queries (of equal length) and a single queries is made to the
+--   API.
+makeMultRequest :: (Query query) => Token -> [String] -> [query] -> IO F.Response
+makeMultRequest token names queries
+  | length names /= length queries = error "The number of names must equal the number of queries"
+  | otherwise                      = makeRawRequest token $ multiQueryString names queries
+
 -- | This function takes an OAuth token and a Write and retunrs and IO action
 --   which sends the Write to API and returns a Response.
 sendWrite :: (Write write) => Token -> write -> IO F.Response
@@ -61,6 +70,13 @@ makeRequest' :: Token -> Request -> IO F.Response
 makeRequest' token request = do
   response <- runOAuthM token $ setupOAuth request
   return $ F.fromValue $ extractJSON response
+
+multiQueryString :: (Query query) => [String] -> [query] -> String
+multiQueryString ns qs = "/multi?queries={" ++ (join "," $ zipWith queryPair ns qs) ++ "}"
+  where queryPair n q = "\"" ++ n ++ "\":\"" ++ toPath q ++ "\""
+
+join :: [a] -> [[a]] -> [a]
+join delim l = concat (intersperse delim l)
 
 generateRequest :: String -> Request
 generateRequest url = (fromJust $ parseURL url) { reqHeaders = (fromList headersList) }
