@@ -57,3 +57,10 @@ run an example go to the project root and execute these commands:
 In this example replace mykey with your key and mysecret with your
 secret. Note that compiling the source code generates .o and .hi
 files in the source directories.
+
+# Writes
+
+Although there is code in the current version to support API writes,
+these features have not yet been implemented in the Factual API. Please
+refrain from attempting to use these features until they have been
+officially announced.

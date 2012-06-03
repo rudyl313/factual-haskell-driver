@@ -3,3 +3,4 @@ cookbooks/**/*
 Vagrantfile
 main
 dist/*
+/cabal-dev
