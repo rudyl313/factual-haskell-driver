@@ -6,24 +6,20 @@ This is a Haskell driver for [Factual's public API](http://developer.factual.com
 
 ## Prerequisites
 
-This driver was developed on [ghc 7.0.4](http://www.haskell.org/ghc/)
-and [The Haskell Platform 2011.4.0.0](http://hackage.haskell.org/platform/).
+This driver targets [ghc 7.4.1](http://www.haskell.org/ghc/)
+and [The Haskell Platform 2012.2.0.0](http://hackage.haskell.org/platform/).
 Please follow the installation instructions for your specific
 platform to install ghc and The Haskell Platform.
+
+## Installation from cabal
+
+    $ cabal install factual-api
 
 ## Installation from git
 
     $ git clone git@github.com:rudyl313/factual-haskell-driver.git
     $ cabal install hoauth
     $ cabal install aeson
-
-Note you may require libcurl to install hoauth. On lucid you can run:
-
-    $ sudo apt-get install libcurl4-openssl-dev
-
-## Installation from cabal
-
-    $ cabal install factual-api
 
 # Tests
 
@@ -44,7 +40,7 @@ can always run the unit tests:
 # Documentation
 
 You can read library documentation by opening docs/index.html in
-your browser.
+your browser or by visiting the [Hackage page](http://hackage.haskell.org/package/factual-api).
 
 # Examples
 

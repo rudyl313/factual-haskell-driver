@@ -1,6 +1,6 @@
 module Main where
 
-import System (getArgs)
+import System.Environment (getArgs)
 import Network.Factual.API
 import Data.Factual.Response
 
