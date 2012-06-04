@@ -7,6 +7,7 @@ module Network.Factual.API
     -- * Read functions
   , makeRequest
   , makeRawRequest
+  , makeMultiRequest
     -- * Write functions
   , sendWrite
     -- * The hoauth Token type
