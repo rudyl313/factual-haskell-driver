@@ -44,7 +44,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Is blank filter test" isBlankFilterTest
                      , TestLabel "Is not blank filter test" isNotBlankFilterTest
                      , TestLabel "And filter test" andFilterTest
-                     , TestLabel "Or filter test" andFilterTest
+                     , TestLabel "Or filter test" orFilterTest
                      , TestLabel "Geo test" geoTest
                      , TestLabel "Include count test" includeCountTest
                      , TestLabel "Schema query test" schemaQueryTest
@@ -91,27 +91,27 @@ customTablePathTest = TestCase (do
   assertEqual "Correct path for custom table" expected path)
 
 geopulsePathTest = TestCase (do
-  let expected = "/places/geopulse?geo={\"$point\":[34.06021,-118.41828]}&select=commercial_density"
+  let expected = "/places/geopulse?geo=%7B%22%24point%22%3A%5B34.06021%2C-118.41828%5D%7D&select=commercial_density"
   let path = toPath $ G.GeopulseQuery { G.geo = Point 34.06021 (-118.41828) , G.select = ["commercial_density"] }
   assertEqual "Correct path for geopulse" expected path)
 
 geocodePathTest = TestCase (do
-  let expected = "/places/geocode?geo={\"$point\":[34.06021,-118.41828]}"
+  let expected = "/places/geocode?geo=%7B%22%24point%22%3A%5B34.06021%2C-118.41828%5D%7D"
   let path = toPath $ GeocodeQuery $ Point 34.06021 (-118.41828)
   assertEqual "Correct path for geocode" expected path)
 
 andSearchPathTest = TestCase (do
-  let expected = "/t/places/read?q=foo bar&include_count=false"
+  let expected = "/t/places/read?q=foo%20bar&include_count=false"
   let path = toPath $ blankReadQuery { search = AndSearch ["foo", "bar"] }
   assertEqual "Correct path for ANDed search" expected path)
 
 orSearchPathTest = TestCase (do
-  let expected = "/t/places/read?q=foo,bar&include_count=false"
+  let expected = "/t/places/read?q=foo%2Cbar&include_count=false"
   let path = toPath $ blankReadQuery { search = OrSearch ["foo", "bar"] }
   assertEqual "Correct path for ANDed search" expected path)
 
 selectPathTest = TestCase (do
-  let expected = "/t/places/read?select=foo,bar&include_count=false"
+  let expected = "/t/places/read?select=foo%2Cbar&include_count=false"
   let path = toPath $ blankReadQuery { select = ["foo", "bar"] }
   assertEqual "Correct path for select terms" expected path)
 
@@ -126,87 +126,87 @@ offsetPathTest = TestCase (do
   assertEqual "Correct path for offset" expected path)
 
 equalNumFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":123.4}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A123.4%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [EqualNum "field" 123.4] }
   assertEqual "Correct path for equal number filter" expected path)
 
 equalStrFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":\"value\"}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%22value%22%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [EqualStr "field" "value"] }
   assertEqual "Correct path for equal string filter" expected path)
 
 notEqualNumFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$neq\":123.4}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24neq%22%3A123.4%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [NotEqualNum "field" 123.4] }
   assertEqual "Correct path for not equal number filter" expected path)
 
 notEqualStrFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$neq\":\"value\"}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24neq%22%3A%22value%22%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [NotEqualStr "field" "value"] }
   assertEqual "Correct path for not equal string filter" expected path)
 
 inNumListFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$in\":[123.4,5432.1]}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24in%22%3A%5B123.4%2C5432.1%5D%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [InNumList "field" [123.4, 5432.1]] }
   assertEqual "Correct path for in number list filter" expected path)
 
 inStrListFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$in\":[\"value\",\"other\"]}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24in%22%3A%5B%22value%22%2C%22other%22%5D%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [InStrList "field" ["value","other"]] }
   assertEqual "Correct path for in string list filter" expected path)
 
 notInNumListFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$nin\":[123.4,5432.1]}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24nin%22%3A%5B123.4%2C5432.1%5D%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [NotInNumList "field" [123.4, 5432.1]] }
   assertEqual "Correct path for not in number list filter" expected path)
 
 notInStrListFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$nin\":[\"value\",\"other\"]}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24nin%22%3A%5B%22value%22%2C%22other%22%5D%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [NotInStrList "field" ["value","other"]] }
   assertEqual "Correct path for not in string list filter" expected path)
 
 beginsWithFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$bw\":\"val\"}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24bw%22%3A%22val%22%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [BeginsWith "field" "val"] }
   assertEqual "Correct path for begins with filter" expected path)
 
 notBeginsWithFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$nbw\":\"val\"}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24nbw%22%3A%22val%22%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [NotBeginsWith "field" "val"] }
   assertEqual "Correct path for not begins with filter" expected path)
 
 beginsWithAnyFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$bwin\":[\"val\",\"ot\"]}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24bwin%22%3A%5B%22val%22%2C%22ot%22%5D%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [BeginsWithAny "field" ["val","ot"]] }
   assertEqual "Correct path for begins with any filter" expected path)
 
 notBeginsWithAnyFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$nbwin\":[\"val\",\"ot\"]}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24nbwin%22%3A%5B%22val%22%2C%22ot%22%5D%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [NotBeginsWithAny "field" ["val","ot"]] }
   assertEqual "Correct path for not begins with any filter" expected path)
 
 isBlankFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$blank\":true}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24blank%22%3Atrue%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [IsBlank "field"] }
   assertEqual "Correct path for is blank filter" expected path)
 
 isNotBlankFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"field\":{\"$blank\":false}}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22field%22%3A%7B%22%24blank%22%3Afalse%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [IsNotBlank "field"] }
   assertEqual "Correct path for is not blank filter" expected path)
 
 andFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"$and\":[{\"field1\":{\"$blank\":true}},{\"field2\":{\"$blank\":false}}]}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22%24and%22%3A%5B%7B%22field1%22%3A%7B%22%24blank%22%3Atrue%7D%7D%2C%7B%22field2%22%3A%7B%22%24blank%22%3Afalse%7D%7D%5D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [And [IsBlank "field1", IsNotBlank "field2"]] }
   assertEqual "Correct path for and filter" expected path)
 
 orFilterTest = TestCase (do
-  let expected = "/t/places/read?filters={\"$or\":[{\"field1\":{\"$blank\":true}},{\"field2\":{\"$blank\":false}}]}&include_count=false"
+  let expected = "/t/places/read?filters=%7B%22%24or%22%3A%5B%7B%22field1%22%3A%7B%22%24blank%22%3Atrue%7D%7D%2C%7B%22field2%22%3A%7B%22%24blank%22%3Afalse%7D%7D%5D%7D&include_count=false"
   let path = toPath $ blankReadQuery { filters = [Or [IsBlank "field1", IsNotBlank "field2"]] }
   assertEqual "Correct path for or filter" expected path)
 
 geoTest = TestCase (do
-  let expected = "/t/places/read?geo={\"$circle\":{\"$center\":[300.1, 200.3],\"$meters\":100.5}}&include_count=false"
+  let expected = "/t/places/read?geo=%7B%22%24circle%22%3A%7B%22%24center%22%3A%5B300.1%2C%20200.3%5D%2C%22%24meters%22%3A100.5%7D%7D&include_count=false"
   let path = toPath $ blankReadQuery { geo = Just (Circle 300.1 200.3 100.5) }
   assertEqual "Correct path for geo" expected path)
 
@@ -221,7 +221,7 @@ schemaQueryTest = TestCase (do
   assertEqual "Correct path for a schema query" expected path)
 
 resolveQueryTest = TestCase (do
-  let expected = "/places/resolve?values={\"field1\":\"value1\",\"field2\":32.1}"
+  let expected = "/places/resolve?values=%7B%22field1%22%3A%22value1%22%2C%22field2%22%3A32.1%7D"
   let path = toPath $ ResolveQuery [ResolveStr "field1" "value1", ResolveNum "field2" 32.1]
   assertEqual "Correct path for a resolve query" expected path)
 
@@ -246,14 +246,12 @@ namespaceIdTest = TestCase (do
   assertEqual "Correct path for a namespace id" expected path)
 
 onlyTest = TestCase (do
-  let expected = "/places/crosswalk?only=yelp,loopd"
+  let expected = "/places/crosswalk?only=yelp%2Cloopd"
   let path = toPath $ blankCrosswalkQuery { C.only = ["yelp", "loopd"] }
   assertEqual "Correct path for a only" expected path)
 
 facetsTest = TestCase (do
-  let expected = "/t/places/facets?q=starbucks&select=locality,region&"
-               ++ "filters={\"country\":\"US\"}&limit=10&min_count=2&"
-               ++ "include_count=false"
+  let expected = "/t/places/facets?q=starbucks&select=locality%2Cregion&filters=%7B%22country%22%3A%22US%22%7D&limit=10&min_count=2&include_count=false"
   let path = toPath $ F.FacetsQuery { F.table        = Places
                                     , F.search       = AndSearch ["starbucks"]
                                     , F.select       = ["locality", "region"]

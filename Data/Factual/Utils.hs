@@ -10,6 +10,7 @@ module Data.Factual.Utils
   ) where
 
 import Data.List (intersperse)
+import Network.HTTP.Base (urlEncode)
 
 -- | The join function joins a list of lists into a list using a separator list.
 --   The most common use case is for joining Strings with a common separator
@@ -25,10 +26,10 @@ joinAndFilter strs = join "&" $ filter ("" /=) strs
 -- The following helper functions are used in generating query Strings.
 selectString :: [String] -> String
 selectString []      = ""
-selectString selects = "select=" ++ (join "," selects)
+selectString selects = "select=" ++ (urlEncode $ (join "," selects))
 
 limitString :: Maybe Int -> String
-limitString (Just x) = "limit=" ++ show x
+limitString (Just x) = "limit=" ++ (urlEncode $ show x)
 limitString Nothing = ""
 
 includeCountString :: Bool -> String

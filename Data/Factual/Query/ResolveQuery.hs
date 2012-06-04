@@ -9,6 +9,7 @@ module Data.Factual.Query.ResolveQuery
 
 import Data.Factual.Query
 import Data.Factual.Utils
+import Network.HTTP.Base (urlEncode)
 
 -- | A resolve value can either be a String or a Number (Double). The first
 --   argument is the name of the field and the second argument is the input
@@ -30,6 +31,5 @@ data ResolveQuery = ResolveQuery [ResolveValue] deriving Eq
 -- ResolveQuery is a member of the Query typeclass so that it can be used to
 -- make requests.
 instance Query ResolveQuery where
-  toPath (ResolveQuery values) = "/places/resolve?values={"
-                               ++ (join "," $ map show values)
-                               ++ "}"
+  toPath (ResolveQuery values) = "/places/resolve?values="
+                               ++ urlEncode ("{" ++ (join "," $ map show values) ++ "}")

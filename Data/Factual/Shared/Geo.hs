@@ -10,6 +10,8 @@ module Data.Factual.Shared.Geo
   , geoString
   ) where
 
+import Network.HTTP.Base (urlEncode)
+
 -- | A Lat is the latitude represented as a Double.
 type Lat = Double
 -- | A Long is the longitude represented as a Double.
@@ -41,5 +43,5 @@ instance Show Geo where
 
 -- Helper functions
 geoString :: Maybe Geo -> String
-geoString (Just c) = "geo=" ++ show c
+geoString (Just g) = "geo=" ++ (urlEncode $ show g)
 geoString Nothing = ""

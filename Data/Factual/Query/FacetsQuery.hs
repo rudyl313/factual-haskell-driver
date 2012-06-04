@@ -16,6 +16,7 @@ import Data.Factual.Shared.Search
 import Data.Factual.Shared.Filter
 import Data.Factual.Shared.Geo
 import Data.Factual.Utils
+import Network.HTTP.Base (urlEncode)
 
 -- | The FacetsQuery type is used to construct facets queries. A table and search
 --   should be specified, but the rest of the query options are essentially
@@ -45,5 +46,5 @@ instance Query FacetsQuery where
 
 -- Helper functions
 minCountString :: Maybe Int -> String
-minCountString (Just x) = "min_count=" ++ show x
+minCountString (Just x) = "min_count=" ++ (urlEncode $ show x)
 minCountString Nothing  = ""

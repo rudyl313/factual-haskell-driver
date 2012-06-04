@@ -13,6 +13,9 @@ module Network.Factual.API
   , Token(..)
   ) where
 
+import Data.Factual.Query.ReadQuery
+import Network.HTTP.Base (urlEncode)
+
 import Data.Maybe (fromJust)
 import Data.List (intersperse)
 import Network.OAuth.Consumer
@@ -22,6 +25,8 @@ import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
 import Data.Aeson (Value, decode)
 import Data.Factual.Query
 import Data.Factual.Write
+import Data.Factual.Utils
+import qualified Data.Map as M
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Factual.Response as F
 
@@ -49,13 +54,16 @@ makeRawRequest token queryString = do
   let request = generateRequest fullpath
   makeRequest' token request
 
--- | This function can be used to make multi queries. You pass in a list of names
---   and a list of queries (of equal length) and a single queries is made to the
---   API.
-makeMultRequest :: (Query query) => Token -> [String] -> [query] -> IO F.Response
-makeMultRequest token names queries
-  | length names /= length queries = error "The number of names must equal the number of queries"
-  | otherwise                      = makeRawRequest token $ multiQueryString names queries
+-- | This function can be used to make multi queries. You pass in a Map of Strings
+--   to queries and a single query is made to the API. The result is a Map of the
+--   same keys to regular response values.
+makeMultRequest :: (Query query) => Token -> M.Map String query -> IO (M.Map String F.Response)
+makeMultRequest token mult = do
+  let queryString = multiQueryString $ M.toList mult
+  let fullpath = basePath ++ queryString
+  let request = generateRequest fullpath
+  response <- runOAuthM token $ setupOAuth request
+  return $ formMultiResponse response $ M.keys mult
 
 -- | This function takes an OAuth token and a Write and retunrs and IO action
 --   which sends the Write to API and returns a Response.
@@ -71,12 +79,14 @@ makeRequest' token request = do
   response <- runOAuthM token $ setupOAuth request
   return $ F.fromValue $ extractJSON response
 
-multiQueryString :: (Query query) => [String] -> [query] -> String
-multiQueryString ns qs = "/multi?queries={" ++ (join "," $ zipWith queryPair ns qs) ++ "}"
-  where queryPair n q = "\"" ++ n ++ "\":\"" ++ toPath q ++ "\""
+multiQueryString :: (Query query) => [(String, query)] -> String
+multiQueryString ps = "/multi?queries=" ++ (urlEncode $ "{" ++ (join "," $ map queryPair ps) ++ "}")
+  where queryPair (n,q) = "\"" ++ n ++ "\":\"" ++ toPath q ++ "\""
 
-join :: [a] -> [[a]] -> [a]
-join delim l = concat (intersperse delim l)
+formMultiResponse :: Response -> [String] -> M.Map String F.Response
+formMultiResponse res ks = M.fromList $ map formPair ks
+  where formPair k = (k, F.fromValue $ F.lookupValue k json)
+        json       = extractJSON res
 
 generateRequest :: String -> Request
 generateRequest url = (fromJust $ parseURL url) { reqHeaders = (fromList headersList) }

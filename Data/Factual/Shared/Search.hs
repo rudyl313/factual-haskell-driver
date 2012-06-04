@@ -8,6 +8,7 @@ module Data.Factual.Shared.Search
   ) where
 
 import Data.Factual.Utils
+import Network.HTTP.Base (urlEncode)
 
 -- | This type is used to construct an ANDed or ORed search in a query.
 data Search = AndSearch [String] | OrSearch [String] | NoSearch deriving Eq
@@ -23,4 +24,4 @@ instance Show Search where
 searchString :: Search -> String
 searchString (AndSearch []) = ""
 searchString (OrSearch []) = ""
-searchString search = "q=" ++ show search
+searchString search = "q=" ++ (urlEncode $ show search)

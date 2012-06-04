@@ -7,6 +7,7 @@ module Data.Factual.Query.CrosswalkQuery
 
 import Data.Factual.Query
 import Data.Factual.Utils
+import Network.HTTP.Base (urlEncode)
 
 -- | A crosswalk query can be formed by specifying a factual id and
 --   (optionally) a list of namespaces to only include when attempting to find
@@ -32,17 +33,17 @@ instance Query CrosswalkQuery where
 -- The following helper functions are used to generate the separate parts of
 -- the query path.
 factualIdString :: Maybe String -> String
-factualIdString (Just id) = "factual_id=" ++ id
+factualIdString (Just id) = "factual_id=" ++ urlEncode id
 factualIdString Nothing   = ""
 
 namespaceString :: Maybe String -> String
-namespaceString (Just namespace) = "namespace=" ++ namespace
+namespaceString (Just namespace) = "namespace=" ++ urlEncode namespace
 namespaceString Nothing          = ""
 
 namespaceIdString :: Maybe String -> String
-namespaceIdString (Just id) = "namespace_id=" ++ id
+namespaceIdString (Just id) = "namespace_id=" ++ urlEncode id
 namespaceIdString Nothing   = ""
 
 onlyString :: [String] -> String
 onlyString []   = ""
-onlyString strs = "only=" ++ (join "," strs)
+onlyString strs = "only=" ++ urlEncode (join "," strs)

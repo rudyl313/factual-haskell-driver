@@ -16,6 +16,7 @@ import Data.Factual.Shared.Search
 import Data.Factual.Shared.Filter
 import Data.Factual.Shared.Geo
 import Data.Factual.Utils
+import Network.HTTP.Base (urlEncode)
 
 -- | The ReadQuery type is used to construct read queries. A table should be
 --   specified, but the rest of the query options are essentially optional
@@ -48,5 +49,5 @@ instance Query ReadQuery where
 
 -- The following helper functions are used in generating query Strings.
 offsetString :: Maybe Int -> String
-offsetString (Just x) = "offset=" ++ show x
+offsetString (Just x) = "offset=" ++ (urlEncode $ show x)
 offsetString Nothing = ""

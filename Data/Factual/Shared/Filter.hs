@@ -9,6 +9,7 @@ module Data.Factual.Shared.Filter
   ) where
 
 import Data.Factual.Utils
+import Network.HTTP.Base (urlEncode)
 
 -- | A Field is a String representation of the field name.
 type Field = String
@@ -57,4 +58,4 @@ showFilter filter = "{" ++ (show filter) ++ "}"
 
 filtersString :: [Filter] -> String
 filtersString [] = ""
-filtersString fs = "filters={" ++ (join "," $ map show fs) ++ "}"
+filtersString fs = "filters=" ++ urlEncode ("{" ++ (join "," $ map show fs) ++ "}")
