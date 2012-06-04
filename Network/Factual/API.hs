@@ -13,9 +13,7 @@ module Network.Factual.API
   , Token(..)
   ) where
 
-import Data.Factual.Query.ReadQuery
 import Network.HTTP.Base (urlEncode)
-
 import Data.Maybe (fromJust)
 import Data.List (intersperse)
 import Network.OAuth.Consumer
@@ -50,34 +48,35 @@ makeRequest token query = makeRawRequest token (toPath query)
 --   in your Token and the path of your request (e.g. \"\/t\/places?q=starbucks\")
 makeRawRequest :: Token -> String -> IO F.Response
 makeRawRequest token queryString = do
-  let fullpath = basePath ++ queryString
-  let request = generateRequest fullpath
-  makeRequest' token request
+  response <- makeRawRequest' token queryString
+  return $ F.fromValue $ extractJSON response
 
 -- | This function can be used to make multi queries. You pass in a Map of Strings
 --   to queries and a single query is made to the API. The result is a Map of the
 --   same keys to regular response values.
-makeMultRequest :: (Query query) => Token -> M.Map String query -> IO (M.Map String F.Response)
-makeMultRequest token mult = do
+makeMultiRequest :: (Query query) => Token -> M.Map String query -> IO (M.Map String F.Response)
+makeMultiRequest token mult = do
   let queryString = multiQueryString $ M.toList mult
-  let fullpath = basePath ++ queryString
-  let request = generateRequest fullpath
-  response <- runOAuthM token $ setupOAuth request
+  response <- makeRawRequest' token queryString
   return $ formMultiResponse response $ M.keys mult
 
 -- | This function takes an OAuth token and a Write and retunrs and IO action
 --   which sends the Write to API and returns a Response.
-sendWrite :: (Write write) => Token -> write -> IO F.Response
+sendWrite :: (Write write) => Token -> write -> IO Response
 sendWrite token write = do
   let fullpath = basePath ++ path write
   let request = generatePostRequest fullpath (body write)
   makeRequest' token request
 
 -- The following helper functions aid the exported API functions
-makeRequest' :: Token -> Request -> IO F.Response
-makeRequest' token request = do
-  response <- runOAuthM token $ setupOAuth request
-  return $ F.fromValue $ extractJSON response
+makeRawRequest' :: Token -> String -> IO Response
+makeRawRequest' token queryString = do
+  let fullpath = basePath ++ queryString
+  let request = generateRequest fullpath
+  makeRequest' token request
+
+makeRequest' :: Token -> Request -> IO Response
+makeRequest' token request = runOAuthM token $ setupOAuth request
 
 multiQueryString :: (Query query) => [(String, query)] -> String
 multiQueryString ps = "/multi?queries=" ++ (urlEncode $ "{" ++ (join "," $ map queryPair ps) ++ "}")
