@@ -68,7 +68,8 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                                        , TestLabel "Facets test" (facetsIntegrationTest token)
                                        , TestLabel "Geopulse test" (geopulseIntegrationTest token)
                                        , TestLabel "Geocode test" (geocodeIntegrationTest token)
-                                       , TestLabel "Multi test" (multiIntegrationTest token) ]
+                                       , TestLabel "Multi test" (multiIntegrationTest token)
+                                       , TestLabel "Error test" (errorIntegrationTest token) ]
                             where token = generateToken key secret
 
 placeTablePathTest = TestCase (do
@@ -323,22 +324,6 @@ rawIntegrationTest token = TestCase (do
   result <- makeRawRequest token "/t/places?q=starbucks"
   assertEqual "Valid read query" "ok" (status result))
 
-multiIntegrationTest :: Token -> Test
-multiIntegrationTest token = TestCase (do
-  let query1 = ReadQuery { table = Places
-                         , search = AndSearch ["McDonalds", "Burger King"]
-                         , select = ["name"]
-                         , limit = Just 50
-                         , offset = Just 10
-                         , includeCount = True
-                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
-                         , filters = [EqualStr "name" "Stand"] }
-  let query2 = query1 { filters = [EqualStr "name" "Xerox"] }
-  results <- makeMultiRequest token $ M.fromList [("query1", query1), ("query2", query2)]
-  let result1 = results M.! "query1"
-  let result2 = results M.! "query2"
-  assertEqual "Valid multi query" ["ok","ok"] [status result1, status result2])
-
 facetsIntegrationTest token = TestCase (do
   let query = F.FacetsQuery { F.table        = Places
                             , F.search       = AndSearch ["Starbucks"]
@@ -361,6 +346,28 @@ geocodeIntegrationTest token = TestCase (do
   let query = GeocodeQuery $ Point 34.06021 (-118.41828)
   result <- makeRequest token query
   assertEqual "Valid geopulse query" "ok" (status result))
+
+
+multiIntegrationTest :: Token -> Test
+multiIntegrationTest token = TestCase (do
+  let query1 = ReadQuery { table = Places
+                         , search = AndSearch ["McDonalds", "Burger King"]
+                         , select = ["name"]
+                         , limit = Just 50
+                         , offset = Just 10
+                         , includeCount = True
+                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
+                         , filters = [EqualStr "name" "Stand"] }
+  let query2 = query1 { filters = [EqualStr "name" "Xerox"] }
+  results <- makeMultiRequest token $ M.fromList [("query1", query1), ("query2", query2)]
+  let result1 = results M.! "query1"
+  let result2 = results M.! "query2"
+  assertEqual "Valid multi query" ["ok","ok"] [status result1, status result2])
+
+errorIntegrationTest :: Token -> Test
+errorIntegrationTest token = TestCase (do
+  result <- makeRawRequest token "/t/foobarbaz"
+  assertEqual "Invalud read query" "error" (status result))
 
 blankReadQuery :: ReadQuery
 blankReadQuery = ReadQuery { table = Places

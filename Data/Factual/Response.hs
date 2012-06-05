@@ -26,17 +26,20 @@ import qualified Data.Vector as V
 -- | A response object has a status (that will be ok if the query was successful
 --   and error if the query failed), a version (which should always be 3.0) and
 --   the actual response data which is an Aeson value.
-data Response = Response { status   :: String
-                         , version  :: Double
-                         , response :: Value
+data Response = Response { status       :: String
+                         , version      :: Double
+                         , response     :: Value
+                         , errorMessage :: Maybe String
+                         , errorType    :: Maybe String
                          } deriving (Eq, Show)
 
 -- | This function is used by the API module to turn the Aeson value returned by
 --   the API into a Response value.
 fromValue :: Value -> Response
-fromValue value = Response { status = lookupString "status" value
-                           , version = lookupNumber "version" value
-                           , response = lookupValue "response" value }
+fromValue value
+  | respStatus == "error" = formErrorResponse value
+  | otherwise             = formValidResponse value
+  where respStatus = lookupString "status" value
 
 -- | This function can be used to convert an Aeson Array value into a vanilla
 --   list.
@@ -65,6 +68,19 @@ lookupValueSafe :: String -> Value -> Maybe Value
 lookupValueSafe key (Object x) = L.lookup (T.pack key) x
 
 -- The following helper functions aid the lookup functions.
+formErrorResponse :: Value -> Response
+formErrorResponse value = Response { status = "error"
+                                   , version = lookupNumber "version" value
+                                   , response = Null
+                                   , errorMessage = Just $ lookupString "message" value
+                                   , errorType = Just $ lookupString "error_type" value }
+
+formValidResponse :: Value -> Response
+formValidResponse value = Response { status = "ok"
+                                   , version = lookupNumber "version" value
+                                   , response = lookupValue "response" value
+                                   , errorMessage = Nothing
+                                   , errorType = Nothing }
 extractString :: Value -> String
 extractString (String x) = T.unpack x
 
