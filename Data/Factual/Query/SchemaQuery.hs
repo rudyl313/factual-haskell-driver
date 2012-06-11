@@ -16,4 +16,4 @@ data SchemaQuery = SchemaQuery Table deriving (Eq, Show)
 
 -- SchemaQuery is a member of Query typeclass so that it can generate a response.
 instance Query SchemaQuery where
-  toPath (SchemaQuery table) = (show $ table) ++ "schema"
+  toPath (SchemaQuery table) = (show $ table) ++ "/schema"

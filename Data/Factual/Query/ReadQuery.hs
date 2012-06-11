@@ -38,7 +38,7 @@ data ReadQuery = ReadQuery { table        :: Table
 -- make a request.
 instance Query ReadQuery where
   toPath query = (show $ table query)
-               ++ "read?"
+               ++ "?"
                ++ joinAndFilter [ searchString $ search query
                                 , selectString $ select query
                                 , limitString $ limit query

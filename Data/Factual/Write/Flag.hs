@@ -40,7 +40,7 @@ data Flag = Flag { table     :: Table
 -- The Flag type is a member of the Write typeclass so it can be sent as a post
 -- request to the API.
 instance Write Flag where
-  path flag = (show $ table flag) ++ (factualId flag) ++ "/flag"
+  path flag = (show $ table flag) ++ "/" ++ (factualId flag) ++ "/flag"
   body flag = "problem=" ++ (show $ problem flag) ++ "&" ++
               "user=" ++ (user flag) ++ "&" ++
               joinAndFilter [ commentString flag

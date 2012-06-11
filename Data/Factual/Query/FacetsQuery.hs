@@ -35,7 +35,7 @@ data FacetsQuery = FacetsQuery { table        :: Table
 -- make a request.
 instance Query FacetsQuery where
   toPath query = (show $ table query)
-               ++ "facets?"
+               ++ "/facets?"
                ++ joinAndFilter [ searchString $ search query
                                 , selectString $ select query
                                 , filtersString $ filters query

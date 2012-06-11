@@ -15,16 +15,18 @@ data Table = Places
            | WorldGeographies
            | ProductsCPG
            | ProductsCrosswalk
+           | Monetize
            | Custom String
            deriving Eq
 
 -- Table is a member of the Show typeclass to generate the beginning of the path.
 instance Show Table where
-  show Places              = "/t/places/"
-  show USRestaurants       = "/t/restaurants-us/"
-  show Global              = "/t/global/"
+  show Places              = "/t/places"
+  show USRestaurants       = "/t/restaurants-us"
+  show Global              = "/t/global"
   show HealthCareProviders = "/t/health-care-providers-us"
   show WorldGeographies    = "/t/world-geographies"
   show ProductsCPG         = "/t/products-cpg"
   show ProductsCrosswalk   = "/t/products-crosswalk"
-  show (Custom name)       = "/t/" ++ name ++ "/"
+  show Monetize            = "/places/monetize"
+  show (Custom name)       = "/t/" ++ name

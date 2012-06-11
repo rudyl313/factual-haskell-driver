@@ -33,10 +33,11 @@ instance Write Submit where
 -- The following functions are helpers for the Write typeclass functions.
 pathString :: Submit -> String
 pathString submit
-  | factualId submit == Nothing = (show $ table submit) ++ "submit"
-  | otherwise = (show $ table submit) ++
-                (fromJust $ factualId submit) ++
-                "/submit"
+  | factualId submit == Nothing = (show $ table submit) ++ "/submit"
+  | otherwise = (show $ table submit)
+              ++ "/"
+              ++ (fromJust $ factualId submit)
+              ++ "/submit"
 
 valuesString :: M.Map String String -> String
 valuesString values = "{" ++ join "," (map valueString $ M.keys values) ++ "}"
