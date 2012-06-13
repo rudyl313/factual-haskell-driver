@@ -106,7 +106,7 @@ extractJSON :: Response -> Value
 extractJSON = fromJust . decode . rspPayload
 
 headersList :: [(String, String)]
-headersList = [("X-Factual-Lib", "factual-haskell-driver-0.3.0")]
+headersList = [("X-Factual-Lib", "factual-haskell-driver-0.3.1")]
 
 basePath :: String
 basePath = "http://api.v3.factual.com"

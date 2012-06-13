@@ -1,9 +1,9 @@
 name:            factual-api
-version:         0.3.0
+version:         0.3.1
 license:         BSD3
 license-file:    LICENSE.txt
 category:        API, Web
-copyright:       (c) 2011 Rudiger Lippert
+copyright:       (c) 2012 Rudiger Lippert
 author:          Rudiger Lippert <rudy@factual.com>
 maintainer:      Rudiger Lippert <rudy@factual.com>
 stability:       stable
