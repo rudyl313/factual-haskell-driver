@@ -9,7 +9,8 @@ module Data.Factual.Shared.Table
 -- | This type defines the available tables. Use the Custom table option for
 --   tables that are not listed you.
 data Table = Places
-           | USRestaurants
+           | RestaurantsUS
+           | HotelsUS
            | Global
            | HealthCareProviders
            | WorldGeographies
@@ -22,7 +23,8 @@ data Table = Places
 -- Table is a member of the Show typeclass to generate the beginning of the path.
 instance Show Table where
   show Places              = "/t/places"
-  show USRestaurants       = "/t/restaurants-us"
+  show RestaurantsUS       = "/t/restaurants-us"
+  show HotelsUS            = "/t/hotels-us"
   show Global              = "/t/global"
   show HealthCareProviders = "/t/health-care-providers-us"
   show WorldGeographies    = "/t/world-geographies"
