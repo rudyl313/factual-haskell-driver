@@ -31,8 +31,8 @@ To run the integration tests you'll need an API key and secret, but you
 can always run the unit tests:
 
     *Main> runUnitTests
-    Cases: 41  Tried: 41  Errors: 0  Failures: 0
-    Counts {cases = 41, tried = 41, errors = 0, failures = 0}
+    Cases: 47  Tried: 47  Errors: 0  Failures: 0
+    Counts {cases = 47, tried = 47, errors = 0, failures = 0}
     *Main> runIntegrationTests "mykey" "mysecret"
     Cases: 10  Tried: 10  Errors: 0  Failures: 0
     Counts {cases = 10, tried = 10, errors = 0, failures = 0}

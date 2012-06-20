@@ -20,7 +20,13 @@ runIntegrationTests key secret = runTestTT $ integrationTests key secret
 
 unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Restaurants table test" restaurantsTablePathTest
+                     , TestLabel "Hotels table test" hotelsTablePathTest
                      , TestLabel "Global table test" globalTablePathTest
+                     , TestLabel "Healthcare table test" healthcareTablePathTest
+                     , TestLabel "World Geographies table test" worldGeographiesTablePathTest
+                     , TestLabel "CPG table test" cpgTablePathTest
+                     , TestLabel "Crosswalk Products table test" crosswalkProductsTablePathTest
+                     , TestLabel "Monetize table test" monetizeTablePathTest
                      , TestLabel "Custom table test" customTablePathTest
                      , TestLabel "Geopulse test" geopulsePathTest
                      , TestLabel "Geocode test" geocodePathTest
@@ -79,13 +85,43 @@ placeTablePathTest = TestCase (do
 
 restaurantsTablePathTest = TestCase (do
   let expected = "/t/restaurants-us?include_count=false"
-  let path = toPath $ blankReadQuery { table = USRestaurants }
+  let path = toPath $ blankReadQuery { table = RestaurantsUS }
   assertEqual "Correct path for us restaurants table" expected path)
+
+hotelsTablePathTest = TestCase (do
+  let expected = "/t/hotels-us?include_count=false"
+  let path = toPath $ blankReadQuery { table = HotelsUS }
+  assertEqual "Correct path for us hotels table" expected path)
 
 globalTablePathTest = TestCase (do
   let expected = "/t/global?include_count=false"
   let path = toPath $ blankReadQuery { table = Global }
   assertEqual "Correct path for global table" expected path)
+
+healthcareTablePathTest = TestCase (do
+  let expected = "/t/health-care-providers-us?include_count=false"
+  let path = toPath $ blankReadQuery { table = HealthCareProviders }
+  assertEqual "Correct path for health care providers table" expected path)
+
+worldGeographiesTablePathTest = TestCase (do
+  let expected = "/t/world-geographies?include_count=false"
+  let path = toPath $ blankReadQuery { table = WorldGeographies }
+  assertEqual "Correct path for world geographies table" expected path)
+
+cpgTablePathTest = TestCase (do
+  let expected = "/t/products-cpg?include_count=false"
+  let path = toPath $ blankReadQuery { table = ProductsCPG }
+  assertEqual "Correct path for products CPG table" expected path)
+
+crosswalkProductsTablePathTest = TestCase (do
+  let expected = "/t/products-crosswalk?include_count=false"
+  let path = toPath $ blankReadQuery { table = ProductsCrosswalk }
+  assertEqual "Correct path for products crosswalk table" expected path)
+
+monetizeTablePathTest = TestCase (do
+  let expected = "/places/monetize?include_count=false"
+  let path = toPath $ blankReadQuery { table = Monetize }
+  assertEqual "Correct path for monetize table" expected path)
 
 customTablePathTest = TestCase (do
   let expected = "/t/foo?include_count=false"
