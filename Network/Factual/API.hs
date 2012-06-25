@@ -10,6 +10,9 @@ module Network.Factual.API
   , makeMultiRequest
     -- * Write functions
   , sendWrite
+    -- * Debug functions
+  , debugQuery
+  , debugWrite
     -- * The hoauth Token type
   , Token(..)
   ) where
@@ -68,6 +71,18 @@ sendWrite token write = do
   let fullpath = basePath ++ path write
   let request = generatePostRequest fullpath (body write)
   makeRequest' token request
+
+-- | This function takes a query and prints out the path for debugging purposes
+debugQuery (Query query) => query -> IO ()
+debugQuery query = putStrLn ("Query path: " ++ basePath ++ toPath query)
+
+-- | This function takes a write and prints out the path and body for debugging
+--   purposes.
+debugWrite (Write write) => write -> IO ()
+debugWrite write = do
+  putStrLn $ putStrLn ("Write path: " ++ basePath ++ path write)
+  putStrLn $ putStrLn "Write body:"
+  putStrLn $ putStrLn $ body write
 
 -- The following helper functions aid the exported API functions
 makeRawRequest' :: Token -> String -> IO Response
