@@ -73,16 +73,16 @@ sendWrite token write = do
   makeRequest' token request
 
 -- | This function takes a query and prints out the path for debugging purposes
-debugQuery (Query query) => query -> IO ()
+debugQuery :: (Query query) => query -> IO ()
 debugQuery query = putStrLn ("Query path: " ++ basePath ++ toPath query)
 
 -- | This function takes a write and prints out the path and body for debugging
 --   purposes.
-debugWrite (Write write) => write -> IO ()
+debugWrite :: (Write write) => write -> IO ()
 debugWrite write = do
-  putStrLn $ putStrLn ("Write path: " ++ basePath ++ path write)
-  putStrLn $ putStrLn "Write body:"
-  putStrLn $ putStrLn $ body write
+  putStrLn ("Write path: " ++ basePath ++ path write)
+  putStrLn "Write body:"
+  putStrLn $ body write
 
 -- The following helper functions aid the exported API functions
 makeRawRequest' :: Token -> String -> IO Response
