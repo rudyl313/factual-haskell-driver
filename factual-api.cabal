@@ -27,7 +27,6 @@ library
   exposed-modules:
     Network.Factual.API
     Data.Factual.Query
-    Data.Factual.Query.CrosswalkQuery
     Data.Factual.Query.FacetsQuery
     Data.Factual.Query.GeocodeQuery
     Data.Factual.Query.GeopulseQuery

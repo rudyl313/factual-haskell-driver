@@ -12,6 +12,7 @@ data Table = Places
            | RestaurantsUS
            | HotelsUS
            | Global
+           | Crosswalk
            | HealthCareProviders
            | WorldGeographies
            | ProductsCPG
@@ -26,6 +27,7 @@ instance Show Table where
   show RestaurantsUS       = "/t/restaurants-us"
   show HotelsUS            = "/t/hotels-us"
   show Global              = "/t/global"
+  show Crosswalk           = "/t/crosswalk"
   show HealthCareProviders = "/t/health-care-providers-us"
   show WorldGeographies    = "/t/world-geographies"
   show ProductsCPG         = "/t/products-cpg"

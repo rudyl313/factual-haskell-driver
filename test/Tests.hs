@@ -8,7 +8,6 @@ import Data.Factual.Query.GeocodeQuery
 import Data.Factual.Response
 import qualified Data.Map as M
 import qualified Data.Factual.Write as W
-import qualified Data.Factual.Query.CrosswalkQuery as C
 import qualified Data.Factual.Query.FacetsQuery as F
 import qualified Data.Factual.Query.GeopulseQuery as G
 import qualified Data.Factual.Write.Submit as S
@@ -22,6 +21,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Restaurants table test" restaurantsTablePathTest
                      , TestLabel "Hotels table test" hotelsTablePathTest
                      , TestLabel "Global table test" globalTablePathTest
+                     , TestLabel "Crosswalk table test" crosswalkProductsTablePathTest
                      , TestLabel "Healthcare table test" healthcareTablePathTest
                      , TestLabel "World Geographies table test" worldGeographiesTablePathTest
                      , TestLabel "CPG table test" cpgTablePathTest
@@ -55,11 +55,6 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Include count test" includeCountTest
                      , TestLabel "Schema query test" schemaQueryTest
                      , TestLabel "Resolve query test" resolveQueryTest
-                     , TestLabel "Factual ID test" factualIdTest
-                     , TestLabel "Crosswalk limit test" limitCWPathTest
-                     , TestLabel "Namespace test" namespaceTest
-                     , TestLabel "Namespace ID test" namespaceIdTest
-                     , TestLabel "Only test" onlyTest
                      , TestLabel "Facets test" facetsTest
                      , TestLabel "Submit path test" submitPathTest
                      , TestLabel "Submit body test" submitBodyTest
@@ -69,7 +64,6 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
 integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationTest token)
                                        , TestLabel "Schema test" (schemaIntegrationTest token)
                                        , TestLabel "Resolve test" (resolveIntegrationTest token)
-                                       , TestLabel "Crosswalk test" (crosswalkIntegrationTest token)
                                        , TestLabel "Raw read test" (rawIntegrationTest token)
                                        , TestLabel "Facets test" (facetsIntegrationTest token)
                                        , TestLabel "Geopulse test" (geopulseIntegrationTest token)
@@ -97,6 +91,11 @@ globalTablePathTest = TestCase (do
   let expected = "/t/global?include_count=false"
   let path = toPath $ blankReadQuery { table = Global }
   assertEqual "Correct path for global table" expected path)
+
+crosswalkTablePathTest = TestCase (do
+  let expected = "/t/crosswalk?include_count=false"
+  let path = toPath $ blankReadQuery { table = Crosswalk }
+  assertEqual "Correct path for crosswalk table" expected path)
 
 healthcareTablePathTest = TestCase (do
   let expected = "/t/health-care-providers-us?include_count=false"
@@ -263,31 +262,6 @@ resolveQueryTest = TestCase (do
   let path = toPath $ ResolveQuery [ResolveStr "field1" "value1", ResolveNum "field2" 32.1]
   assertEqual "Correct path for a resolve query" expected path)
 
-factualIdTest = TestCase (do
-  let expected = "/places/crosswalk?factual_id=1234"
-  let path = toPath $ blankCrosswalkQuery { C.factualId = Just "1234" }
-  assertEqual "Correct path for a factual id" expected path)
-
-limitCWPathTest = TestCase (do
-  let expected = "/places/crosswalk?limit=1234"
-  let path = toPath $ blankCrosswalkQuery { C.limit = Just 1234 }
-  assertEqual "Correct path for a limit in a crosswalk query" expected path)
-
-namespaceTest = TestCase (do
-  let expected = "/places/crosswalk?namespace=yelp"
-  let path = toPath $ blankCrosswalkQuery { C.namespace = Just "yelp" }
-  assertEqual "Correct path for a namespace" expected path)
-
-namespaceIdTest = TestCase (do
-  let expected = "/places/crosswalk?namespace_id=5432"
-  let path = toPath $ blankCrosswalkQuery { C.namespaceId = Just "5432" }
-  assertEqual "Correct path for a namespace id" expected path)
-
-onlyTest = TestCase (do
-  let expected = "/places/crosswalk?only=yelp%2Cloopd"
-  let path = toPath $ blankCrosswalkQuery { C.only = ["yelp", "loopd"] }
-  assertEqual "Correct path for a only" expected path)
-
 facetsTest = TestCase (do
   let expected = "/t/places/facets?q=starbucks&select=locality%2Cregion&filters=%7B%22country%22%3A%22US%22%7D&limit=10&min_count=2&include_count=false"
   let path = toPath $ F.FacetsQuery { F.table        = Places
@@ -344,16 +318,6 @@ resolveIntegrationTest token = TestCase (do
   let query = ResolveQuery [ResolveStr "name" "McDonalds"]
   result <- makeRequest token query
   assertEqual "Valid resolve query" "ok" (status result))
-
-crosswalkIntegrationTest :: Token -> Test
-crosswalkIntegrationTest token = TestCase (do
-  let query = C.CrosswalkQuery { C.factualId = Just "97598010-433f-4946-8fd5-4a6dd1639d77"
-                               , C.limit = Nothing
-                               , C.namespace = Nothing
-                               , C.namespaceId = Nothing
-                               , C.only = ["loopt"] }
-  result <- makeRequest token query
-  assertEqual "Valid crosswalk query" "ok" (status result))
 
 rawIntegrationTest :: Token -> Test
 rawIntegrationTest token = TestCase (do
@@ -414,13 +378,6 @@ blankReadQuery = ReadQuery { table = Places
                            , filters = []
                            , geo = Nothing
                            , includeCount = False }
-
-blankCrosswalkQuery :: C.CrosswalkQuery
-blankCrosswalkQuery = C.CrosswalkQuery { C.factualId = Nothing
-                                       , C.limit = Nothing
-                                       , C.namespace = Nothing
-                                       , C.namespaceId = Nothing
-                                       , C.only = [] }
 
 submitWrite :: S.Submit
 submitWrite = S.Submit { S.table     = Places

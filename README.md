@@ -9,13 +9,13 @@ This is a Haskell driver for [Factual's public API](http://developer.factual.com
   * Restaurants US
   * Hotels US
   * Global Places
+  * Crosswalk
   * Healthcare Providers
   * World Geographies
   * Products CPG
   * Products Crosswalk
   * Monetize
   * Custom Tables
-* Crosswalk Queries
 * Facets Queries
 * Geocode Queries
 * Geopulse Queries
@@ -56,11 +56,11 @@ To run the integration tests you'll need an API key and secret, but you
 can always run the unit tests:
 
     *Main> runUnitTests
-    Cases: 47  Tried: 47  Errors: 0  Failures: 0
-    Counts {cases = 47, tried = 47, errors = 0, failures = 0}
+    Cases: 43  Tried: 43  Errors: 0  Failures: 0
+    Counts {cases = 43, tried = 43, errors = 0, failures = 0}
     *Main> runIntegrationTests "mykey" "mysecret"
-    Cases: 10  Tried: 10  Errors: 0  Failures: 0
-    Counts {cases = 10, tried = 10, errors = 0, failures = 0}
+    Cases: 9  Tried: 9  Errors: 0  Failures: 0
+    Counts {cases = 9, tried = 9, errors = 0, failures = 0}
 
 # Documentation
 
@@ -79,9 +79,16 @@ In this example replace mykey with your key and mysecret with your
 secret. Note that compiling the source code generates .o and .hi
 files in the source directories.
 
-# Writes
+# Notes
+
+## Writes
 
 Although there is code in the current version to support API writes,
 these features have not yet been implemented in the Factual API. Please
 refrain from attempting to use these features until they have been
 officially announced.
+
+## Crosswalk deprecation
+
+The Crosswalk API endpoint has been migrated into a regular read table.
+For more information see the [Factual V3 documentation](http://developer.factual.com/display/docs/Places+API+-+Crosswalk).
