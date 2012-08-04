@@ -4,13 +4,14 @@ module Data.Factual.Utils
     -- * Utility methods
     join
   , joinAndFilter
-  , selectString
-  , limitString
-  , includeCountString
+  , selectPair
+  , limitPair
+  , includeCountPair
   ) where
 
 import Data.List (intersperse)
 import Network.HTTP.Base (urlEncode)
+import qualified Data.Map as M
 
 -- | The join function joins a list of lists into a list using a separator list.
 --   The most common use case is for joining Strings with a common separator
@@ -24,14 +25,13 @@ joinAndFilter :: [String] -> String
 joinAndFilter strs = join "&" $ filter ("" /=) strs
 
 -- The following helper functions are used in generating query Strings.
-selectString :: [String] -> String
-selectString []      = ""
-selectString selects = "select=" ++ (urlEncode $ (join "," selects))
+selectPair :: [String] -> (String, String)
+selectPair selects = ("select", join "," selects)
 
-limitString :: Maybe Int -> String
-limitString (Just x) = "limit=" ++ (urlEncode $ show x)
-limitString Nothing = ""
+limitPair :: Maybe Int -> (String, String)
+limitPair (Just x) = ("limit", show x)
+limitPair Nothing  = ("limit", "")
 
-includeCountString :: Bool -> String
-includeCountString True = "include_count=true"
-includeCountString False = "include_count=false"
+includeCountPair :: Bool -> (String, String)
+includeCountPair True  = ("include_count", "true")
+includeCountPair False = ("include_count", "false")

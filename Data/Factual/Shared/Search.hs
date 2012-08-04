@@ -4,7 +4,7 @@ module Data.Factual.Shared.Search
     -- * Search type
     Search(..)
     -- * Helper functions
-  , searchString
+  , searchPair
   ) where
 
 import Data.Factual.Utils
@@ -21,7 +21,5 @@ instance Show Search where
   show NoSearch          = ""
 
 -- Helper functions
-searchString :: Search -> String
-searchString (AndSearch []) = ""
-searchString (OrSearch []) = ""
-searchString search = "q=" ++ (urlEncode $ show search)
+searchPair :: Search -> (String, String)
+searchPair search = ("q", show search)

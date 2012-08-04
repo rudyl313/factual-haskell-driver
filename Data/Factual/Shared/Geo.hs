@@ -7,7 +7,7 @@ module Data.Factual.Shared.Geo
   , Radius
   , Geo(..)
     -- * Helper functions
-  , geoString
+  , geoPair
   ) where
 
 import Network.HTTP.Base (urlEncode)
@@ -42,6 +42,6 @@ instance Show Geo where
                         ++ "]}"
 
 -- Helper functions
-geoString :: Maybe Geo -> String
-geoString (Just g) = "geo=" ++ (urlEncode $ show g)
-geoString Nothing = ""
+geoPair :: Maybe Geo -> (String, String)
+geoPair (Just g) = ("geo", show g)
+geoPair Nothing  = ("geo", "")

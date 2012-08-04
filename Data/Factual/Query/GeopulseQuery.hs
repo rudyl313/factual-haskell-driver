@@ -10,6 +10,7 @@ module Data.Factual.Query.GeopulseQuery
 import Data.Factual.Query
 import Data.Factual.Utils
 import Data.Factual.Shared.Geo
+import qualified Data.Map as M
 
 -- | The GeopulseQuery type is used to construct geopulse queries. A geo point
 --   is required but select values are optional (just use an empty list to
@@ -21,6 +22,6 @@ data GeopulseQuery = GeopulseQuery { geo    :: Geo
 -- The GeopulseQuery type is a member of the Query typeclass so it can be used
 -- to make a request.
 instance Query GeopulseQuery where
-  toPath query = "/places/geopulse?"
-               ++ joinAndFilter [ geoString $ Just $ geo query
-                                , selectString $ select query ]
+  path   _     = "/places/geopulse"
+  params query = M.fromList [ geoPair $ Just $ geo query
+                            , selectPair $ select query ]

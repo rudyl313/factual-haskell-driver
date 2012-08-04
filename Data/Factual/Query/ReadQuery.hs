@@ -17,6 +17,7 @@ import Data.Factual.Shared.Filter
 import Data.Factual.Shared.Geo
 import Data.Factual.Utils
 import Network.HTTP.Base (urlEncode)
+import qualified Data.Map as M
 
 -- | The ReadQuery type is used to construct read queries. A table should be
 --   specified, but the rest of the query options are essentially optional
@@ -34,20 +35,20 @@ data ReadQuery = ReadQuery { table        :: Table
                            , includeCount :: Bool
                            } deriving (Eq, Show)
 
+
 -- The ReadQuery type is a member of the Query typeclass so it can be used to
 -- make a request.
 instance Query ReadQuery where
-  toPath query = (show $ table query)
-               ++ "?"
-               ++ joinAndFilter [ searchString $ search query
-                                , selectString $ select query
-                                , limitString $ limit query
-                                , offsetString $ offset query
-                                , filtersString $ filters query
-                                , geoString $ geo query
-                                , includeCountString $ includeCount query ]
+  path query   = show $ table query
+  params query = M.fromList [ searchPair       $ search query
+                            , selectPair       $ select query
+                            , limitPair        $ limit query
+                            , offsetPair       $ offset query
+                            , filtersPair      $ filters query
+                            , geoPair          $ geo query
+                            , includeCountPair $ includeCount query ]
 
 -- The following helper functions are used in generating query Strings.
-offsetString :: Maybe Int -> String
-offsetString (Just x) = "offset=" ++ (urlEncode $ show x)
-offsetString Nothing = ""
+offsetPair :: Maybe Int -> (String, String)
+offsetPair (Just x) = ("offset", show x)
+offsetPair Nothing  = ("offset", "")

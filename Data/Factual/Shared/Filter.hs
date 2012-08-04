@@ -5,7 +5,7 @@ module Data.Factual.Shared.Filter
     Field
   , Filter(..)
     -- * Helper functions
-  , filtersString
+  , filtersPair
   ) where
 
 import Data.Factual.Utils
@@ -56,6 +56,6 @@ instance Show Filter where
 showFilter :: Filter -> String
 showFilter filter = "{" ++ (show filter) ++ "}"
 
-filtersString :: [Filter] -> String
-filtersString [] = ""
-filtersString fs = "filters=" ++ urlEncode ("{" ++ (join "," $ map show fs) ++ "}")
+filtersPair :: [Filter] -> (String, String)
+filtersPair [] = ("filters", "")
+filtersPair fs = ("filters", "{" ++ (join "," $ map show fs) ++ "}")
