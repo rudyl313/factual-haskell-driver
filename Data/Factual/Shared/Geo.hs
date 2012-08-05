@@ -24,7 +24,7 @@ data Geo = Circle Lat Long Radius
          | Point Lat Long
          deriving Eq
 
--- Geo is a member of Show to help generate query strings.
+-- Geo is a member of Show to help generate query params.
 instance Show Geo where
   show (Circle lat long radius) = "{\"$circle\":{\"$center\":[" 
                                 ++ (show lat) 

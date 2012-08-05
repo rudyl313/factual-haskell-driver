@@ -13,7 +13,7 @@ import Data.Factual.Utils
 data Search = AndSearch [String] | OrSearch [String] | NoSearch deriving Eq
 
 -- When a Search is shown it displays the string representation that will go
--- into the query string.
+-- into the query params.
 instance Show Search where
   show (AndSearch terms) = join " " terms
   show (OrSearch terms)  = join "," terms

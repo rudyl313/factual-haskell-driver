@@ -51,7 +51,7 @@ instance Show Filter where
   show (And filters) = (show "$and") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
   show (Or filters) = (show "$or") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
 
--- The following helper functions are used in generating query Strings.
+-- The following helper functions are used in generating query params.
 showFilter :: Filter -> String
 showFilter filter = "{" ++ (show filter) ++ "}"
 
