@@ -13,6 +13,7 @@ import Data.Factual.Write
 import Data.Factual.Shared.Table
 import Data.Maybe (fromJust)
 import Data.Factual.Utils
+import qualified Data.Map as M
 
 -- | A Problem represents what is wrong with the row being flagged
 data Problem = Duplicate
@@ -41,24 +42,25 @@ data Flag = Flag { table     :: Table
 -- request to the API.
 instance Write Flag where
   path flag = (show $ table flag) ++ "/" ++ (factualId flag) ++ "/flag"
-  body flag = "problem=" ++ (show $ problem flag) ++ "&" ++
-              "user=" ++ (user flag) ++ "&" ++
-              joinAndFilter [ commentString flag
-                            , debugString flag
-                            , referenceString flag ]
+  params _  = M.empty
+  body flag = M.fromList [ ("problem", show $ problem flag)
+                         , ("user", user flag)
+                         , commentPair flag
+                         , debugPair flag
+                         , referencePair flag ]
 
 -- The following functions are helpers for the body function
-commentString :: Flag -> String
-commentString flag
-  | comment flag == Nothing = ""
-  | otherwise               = "comment=" ++ (fromJust $ comment flag)
+commentPair :: Flag -> (String, String)
+commentPair flag
+  | comment flag == Nothing = ("comment", "")
+  | otherwise               = ("comment", fromJust $ comment flag)
 
-debugString :: Flag -> String
-debugString flag
-  | debug flag == True = "debug=true"
-  | otherwise          = "debug=false"
+debugPair :: Flag -> (String, String)
+debugPair flag
+  | debug flag == True = ("debug", "true")
+  | otherwise          = ("debug", "false")
 
-referenceString :: Flag -> String
-referenceString flag
-  | reference flag == Nothing = ""
-  | otherwise                 = "reference=" ++ (fromJust $ reference flag)
+referencePair :: Flag -> (String, String)
+referencePair flag
+  | reference flag == Nothing = ("reference", "")
+  | otherwise                 = ("reference", fromJust $ reference flag)

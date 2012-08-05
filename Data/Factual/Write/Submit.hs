@@ -26,9 +26,10 @@ data Submit = Submit { table     :: Table
 -- The Submit type is a member of the Write typeclass so that it can be
 -- sent as a post request to the API.
 instance Write Submit where
-  path submit = pathString submit
-  body submit = "user=" ++ (user submit) ++ "&" ++
-                "values=" ++ valuesString (values submit)
+  path   submit = pathString submit
+  params _      = M.empty
+  body   submit = M.fromList [ ("user", user submit) 
+                             , ("values", valuesString (values submit)) ]
 
 -- The following functions are helpers for the Write typeclass functions.
 pathString :: Submit -> String
