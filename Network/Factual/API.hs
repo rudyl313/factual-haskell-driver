@@ -1,17 +1,16 @@
--- | This module exports functions which are used to execute queries and handle
+-- | This module exports functions which are used to execute requests and handle
 --   the OAuth authentication process.
 module Network.Factual.API
   (
     -- * Authentication
     generateToken
     -- * Read functions
-  , makeRequest
-  , makeRawRequest
-  , formRelativePath
-  , makeRawRequest'
-  , makeMultiRequest
+  , executeQuery
+  , executeMultiQuery
+  , get
     -- * Write functions
-  , sendWrite
+  , executeWrite
+  , post
     -- * Debug functions
   , debugQuery
   , debugWrite
@@ -34,93 +33,81 @@ import qualified Data.Map as M
 import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Data.Factual.Response as F
 
--- | The Key is the oauth key as a String.
-type Key = String
--- | The Secret is the oauth secret as a String.
+type Key    = String
 type Secret = String
+type Path   = String
+type Params = M.Map String String
+type Body   = M.Map String String
 
--- | This function takes a set of credentials and returns an OAuth token that
---   can be used to make requests.
 generateToken :: Key -> Secret -> Token
 generateToken key secret = fromApplication $ Application key secret OOB
 
--- | This function takes an OAuth token and a query (which is member of the
---   Query typeclass) and returns an IO action which will fetch a response from
---   the Factual API.
-makeRequest :: (Query query) => Token -> query -> IO F.Response
-makeRequest token query = makeRawRequest token (path query) (params query)
+executeQuery :: (Query query) => Token -> query -> IO F.Response
+executeQuery token query = get token (path query) (params query)
 
-makeRawRequest :: Token -> String -> M.Map String String -> IO F.Response
-makeRawRequest token path params = makeRawRequest' token relativePath
-  where relativePath = formRelativePath' path params
+executeMultiQuery :: (Query query) => Token -> M.Map String query -> IO (M.Map String F.Response)
+executeMultiQuery token multiMap = do
+  let queryString = formMultiQueryString $ M.toList multiMap
+  response <- get'' token queryString
+  return $ formMultiResponse response $ M.keys multiMap
 
--- | This function can be used to make raw read requests for any path. You pass
---   in your Token and the path of your request (e.g. \"\/t\/places?q=starbucks\")
-makeRawRequest' :: Token -> String -> IO F.Response
-makeRawRequest' token queryString = do
-  response <- makeRawRequest'' token queryString
-  return $ F.fromValue $ extractJSON response
-
--- | This function can be used to make multi queries. You pass in a Map of Strings
---   to queries and a single query is made to the API. The result is a Map of the
---   same keys to regular response values.
-makeMultiRequest :: (Query query) => Token -> M.Map String query -> IO (M.Map String F.Response)
-makeMultiRequest token mult = do
-  let queryString = multiQueryString $ M.toList mult
-  response <- makeRawRequest'' token queryString
-  return $ formMultiResponse response $ M.keys mult
-
--- | This function takes an OAuth token and a Write and retunrs and IO action
---   which sends the Write to API and returns a Response.
-sendWrite :: (W.Write write) => Token -> write -> IO Response
-sendWrite token write = do
-  let fullpath = basePath ++ W.path write
-  let request = generatePostRequest fullpath (W.body write)
-  makeRequest' token request
-
--- | This function takes a query and prints out the path for debugging purposes
 debugQuery :: (Query query) => query -> IO ()
-debugQuery query = putStrLn $ "Query path: " ++ basePath ++ (formRelativePath' (path query) (params query))
+debugQuery query = putStrLn $ "Query path: " ++ basePath ++ (formQueryString (path query) (params query))
 
--- | This function takes a write and prints out the path and body for debugging
---   purposes.
+executeWrite :: (W.Write write) => Token -> write -> IO F.Response
+executeWrite token write = post token (W.path write) (W.params write) (W.body write)
+
 debugWrite :: (W.Write write) => write -> IO ()
 debugWrite write = do
   putStrLn ("Write path: " ++ basePath ++ W.path write)
   putStrLn "Write body:"
-  putStrLn $ W.body write
+  putStrLn $ formParamsString $ W.body write
 
--- The following helper functions aid the exported API functions
-makeRawRequest'' :: Token -> String -> IO Response
-makeRawRequest'' token queryString = do
-  let fullpath = basePath ++ queryString
-  let request = generateRequest fullpath
-  makeRequest' token request
+get :: Token -> Path -> Params -> IO F.Response
+get token path params = get' token (formQueryString path params)
 
-makeRequest' :: Token -> Request -> IO Response
-makeRequest' token request = runOAuthM token $ setupOAuth request
+get' :: Token -> String -> IO F.Response
+get' token queryString = do
+  response <- get'' token queryString
+  return $ F.fromValue $ extractJSON response
 
-formRelativePath :: (Query q) => q -> String
-formRelativePath query = formRelativePath' (path query) (params query)
+get'' :: Token -> String -> IO Response
+get'' token queryString = do
+  let fullPath = basePath ++ queryString
+  let request = generateRequest fullPath
+  execute token request
 
-formRelativePath' :: String -> M.Map String String -> String
-formRelativePath' path params = path ++ "?" ++ (formParamsString params)
+post :: Token -> Path -> Params -> Body -> IO F.Response
+post token path params body = post' token queryString bodyString
+  where queryString = formQueryString path params
+        bodyString  = formParamsString body
+
+post' :: Token -> String -> String -> IO F.Response
+post' token queryString bodyString = do
+  let fullPath = basePath ++ queryString
+  let request = generatePostRequest fullPath bodyString
+  response <- execute token request
+  return $ F.fromValue $ extractJSON response
+
+execute :: Token -> Request -> IO Response
+execute token request = runOAuthM token $ setupOAuth request
+
+formQueryString :: String -> M.Map String String -> String
+formQueryString path params = path ++ "?" ++ (formParamsString params)
 
 formParamsString :: M.Map String String -> String
 formParamsString params = formParamsString' $ M.toList params
 
 formParamsString' :: [(String, String)] -> String
-formParamsString' paramList = join "&" $ paramParts
-  where paramParts     = map formParamParts filteredParams
-        filteredParams = filter nonEmpty paramList
-        nonEmpty (k,v) = "" /= v
+formParamsString' paramList = join "&" $ map formParamParts filteredParams
+  where filteredParams = filter (\(k,v) -> "" /= v) paramList
 
 formParamParts :: (String, String) -> String
 formParamParts (key, value) = key ++ "=" ++ (urlEncode value)
 
-multiQueryString :: (Query query) => [(String, query)] -> String
-multiQueryString ps = "/multi?queries=" ++ (urlEncode $ "{" ++ (join "," $ map queryPair ps) ++ "}")
-  where queryPair (n,q) = "\"" ++ n ++ "\":\"" ++ (formRelativePath' (path q) (params q)) ++ "\""
+formMultiQueryString :: (Query query) => [(String, query)] -> String
+formMultiQueryString ps = "/multi?queries=" ++ (urlEncode $ "{" ++ (join "," $ map queryPair ps) ++ "}")
+  where queryPair (n,q) = "\"" ++ n ++ "\":\"" ++ (formQueryString (path q) (params q)) ++ "\""
 
 formMultiResponse :: Response -> [String] -> M.Map String F.Response
 formMultiResponse res ks = M.fromList $ map formPair ks
