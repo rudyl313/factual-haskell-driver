@@ -16,7 +16,6 @@ import Data.Factual.Shared.Search
 import Data.Factual.Shared.Filter
 import Data.Factual.Shared.Geo
 import Data.Factual.Utils
-import Network.HTTP.Base (urlEncode)
 import qualified Data.Map as M
 
 -- | The FacetsQuery type is used to construct facets queries. A table and search

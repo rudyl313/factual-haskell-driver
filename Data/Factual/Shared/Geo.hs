@@ -10,8 +10,6 @@ module Data.Factual.Shared.Geo
   , geoPair
   ) where
 
-import Network.HTTP.Base (urlEncode)
-
 -- | A Lat is the latitude represented as a Double.
 type Lat = Double
 -- | A Long is the longitude represented as a Double.

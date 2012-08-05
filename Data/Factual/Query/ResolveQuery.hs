@@ -9,7 +9,6 @@ module Data.Factual.Query.ResolveQuery
 
 import Data.Factual.Query
 import Data.Factual.Utils
-import Network.HTTP.Base (urlEncode)
 import qualified Data.Map as M
 
 -- | A resolve value can either be a String or a Number (Double). The first
