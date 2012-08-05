@@ -6,8 +6,9 @@ module Data.Factual.Query
 
 import qualified Data.Map as M
 
--- | A member of the Query typeclass must define a toPath method which converts
---   the Query into a path String.
+-- | A member of the Query typeclass must define a path function which outputs
+--   the Query endpoint path, and a params function that outputs a Map of query
+--   params keys and values.
 class Query q where
   path   :: q -> String
   params :: q -> M.Map String String

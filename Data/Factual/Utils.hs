@@ -3,14 +3,12 @@ module Data.Factual.Utils
   (
     -- * Utility methods
     join
-  , joinAndFilter
   , selectPair
   , limitPair
   , includeCountPair
   ) where
 
 import Data.List (intersperse)
-import Network.HTTP.Base (urlEncode)
 import qualified Data.Map as M
 
 -- | The join function joins a list of lists into a list using a separator list.
@@ -19,12 +17,7 @@ import qualified Data.Map as M
 join :: [a] -> [[a]] -> [a]
 join delim xs = concat (intersperse delim xs)
 
--- | This function filters out empty Strings from a list before joining the
---   Strings with an & character. The use case is forming query path Strings.
-joinAndFilter :: [String] -> String
-joinAndFilter strs = join "&" $ filter ("" /=) strs
-
--- The following helper functions are used in generating query Strings.
+-- The following helper functions are used in generating query params Maps.
 selectPair :: [String] -> (String, String)
 selectPair selects = ("select", join "," selects)
 
