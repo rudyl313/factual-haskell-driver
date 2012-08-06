@@ -141,10 +141,11 @@ generateRequest :: String -> Request
 generateRequest url = (fromJust $ parseURL url) { reqHeaders = (fromList headersList) }
 
 generatePostRequest :: String -> String -> Request
-generatePostRequest url body = baseRequest { reqHeaders = (fromList headersList)
+generatePostRequest url body = baseRequest { reqHeaders = (fromList postHeaders)
                                            , method = POST
                                            , reqPayload = B.pack body }
   where baseRequest = (fromJust $ parseURL url)
+        postHeaders = headersList ++ [("Content-Type", "application/x-www-form-urlencoded")]
 
 setupOAuth :: Request -> OAuthMonadT IO Response
 setupOAuth request = do
