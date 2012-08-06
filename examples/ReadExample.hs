@@ -19,7 +19,7 @@ main = do
                         , includeCount = True
                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                         , filters = [EqualStr "name" "Stand"] }
-  result <- makeRequest token query
+  result <- executeQuery token query
   putStrLn $ "Status: " ++ status result
   putStrLn $ "Version: " ++ show (version result)
   putStrLn $ "Data: " ++ show (response result)

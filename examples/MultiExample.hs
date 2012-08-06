@@ -29,7 +29,7 @@ main = do
                          , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                          , filters = [EqualStr "name" "Xerox"] }
   let multiQuery = M.fromList [("query1", query1), ("query2", query2)]
-  multiResult <- makeMultiRequest token multiQuery
+  multiResult <- executeMultiQuery token multiQuery
   let result1 = multiResult M.! "query1"
   let result2 = multiResult M.! "query2"
   putStrLn "query1:"

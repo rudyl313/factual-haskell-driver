@@ -12,7 +12,7 @@ main = do
   let oauthSecret = last args
   let token = generateToken oauthKey oauthSecret
   let query = SchemaQuery Places
-  result <- makeRequest token query
+  result <- executeQuery token query
   putStrLn $ "Status: " ++ status result
   putStrLn $ "Version: " ++ show (version result)
   putStrLn $ "Data: " ++ show (response result)
