@@ -404,7 +404,7 @@ facetsIntegrationTest token = TestCase (do
   assertEqual "Valid facets query" "ok" (status result))
 
 diffsIntegrationTest token = TestCase (do
-  let query = D.DiffsQuery { D.table = Places, D.start = 1318890505254, D.end = 1318890516892 }
+  let query = D.DiffsQuery { D.table = Custom "canada-stable", D.start = 1339123455775, D.end = 1339124455775 }
   result <- executeQuery token query
   assertEqual "Valid diffs query" "ok" (status result))
 
@@ -442,7 +442,7 @@ submitIntegrationTest token = TestCase (do
                              , ("address","1801 Avenue of the Stars, Suite 1450")
                              , ("country","USA")
                              , ("locality","Los Angeles") ]
-  let write = S.Submit { S.table     = Custom "t7RSEV"
+  let write = S.Submit { S.table     = Custom "canada-edge"
                        , S.user      = "drivertest"
                        , S.factualId = Nothing
                        , S.values    = newValues }
@@ -451,7 +451,7 @@ submitIntegrationTest token = TestCase (do
 
 flagIntegrationTest :: Token -> Test
 flagIntegrationTest token = TestCase (do
-  let write = L.Flag { L.table     = Custom "t7RSEV"
+  let write = L.Flag { L.table     = Custom "canada-edge"
                      , L.user      = "drivertest"
                      , L.factualId = "f33527e0-a8b4-4808-a820-2686f18cb00c"
                      , L.problem   = L.Inaccurate

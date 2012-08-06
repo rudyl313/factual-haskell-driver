@@ -11,7 +11,7 @@ main = do
   let oauthKey = head args
   let oauthSecret = last args
   let token = generateToken oauthKey oauthSecret
-  let query = DiffsQuery { table = Places, start = 1318890505254, end = 1318890516892 }
+  let query = DiffsQuery { table = Custom "canada-stable", start = 1339123455775, end = 1339124455775 }
   result <- executeQuery token query
   putStrLn $ "Status: " ++ status result
   putStrLn $ "Version: " ++ show (version result)
