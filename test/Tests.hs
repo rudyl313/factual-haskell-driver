@@ -1,11 +1,11 @@
 import Test.HUnit
 import Network.Factual.API
-import Data.Factual.Query
 import Data.Factual.Query.ReadQuery
 import Data.Factual.Query.SchemaQuery
 import Data.Factual.Query.ResolveQuery
 import Data.Factual.Query.GeocodeQuery
 import Data.Factual.Response
+import qualified Data.Factual.Query as Q
 import qualified Data.Map as M
 import qualified Data.Factual.Write as W
 import qualified Data.Factual.Query.FacetsQuery as F
@@ -28,13 +28,13 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Crosswalk Products table test" crosswalkProductsTablePathTest
                      , TestLabel "Monetize table test" monetizeTablePathTest
                      , TestLabel "Custom table test" customTablePathTest
-                     , TestLabel "Geopulse test" geopulsePathTest
-                     , TestLabel "Geocode test" geocodePathTest
+                     , TestLabel "Geopulse test" geopulseTest
+                     , TestLabel "Geocode test" geocodeTest
                      , TestLabel "And search test" andSearchPathTest
                      , TestLabel "Or search test" orSearchPathTest
-                     , TestLabel "Select test" selectPathTest
-                     , TestLabel "Limit test" limitPathTest
-                     , TestLabel "Offset test" offsetPathTest
+                     , TestLabel "Select test" selectTest
+                     , TestLabel "Limit test" limitTest
+                     , TestLabel "Offset test" offsetTest
                      , TestLabel "Equal number filter test" equalNumFilterTest
                      , TestLabel "Equal string filter test" equalStrFilterTest
                      , TestLabel "Not equal number filter test" notEqualNumFilterTest
@@ -73,216 +73,246 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                             where token = generateToken key secret
 
 placeTablePathTest = TestCase (do
-  let expected = "/t/places?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = Places }
-  assertEqual "Correct path for places table" expected path)
+  let expected = "/t/places"
+  let queryPath = Q.path $ blankReadQuery { table = Places }
+  assertEqual "Correct path for places table" expected queryPath)
 
 restaurantsTablePathTest = TestCase (do
-  let expected = "/t/restaurants-us?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = RestaurantsUS }
-  assertEqual "Correct path for us restaurants table" expected path)
+  let expected = "/t/restaurants-us"
+  let queryPath = Q.path $ blankReadQuery { table = RestaurantsUS }
+  assertEqual "Correct path for us restaurants table" expected queryPath)
 
 hotelsTablePathTest = TestCase (do
-  let expected = "/t/hotels-us?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = HotelsUS }
-  assertEqual "Correct path for us hotels table" expected path)
+  let expected = "/t/hotels-us"
+  let queryPath = Q.path $ blankReadQuery { table = HotelsUS }
+  assertEqual "Correct path for us hotels table" expected queryPath)
 
 globalTablePathTest = TestCase (do
-  let expected = "/t/global?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = Global }
-  assertEqual "Correct path for global table" expected path)
+  let expected = "/t/global"
+  let queryPath = Q.path $ blankReadQuery { table = Global }
+  assertEqual "Correct path for global table" expected queryPath)
 
 crosswalkTablePathTest = TestCase (do
-  let expected = "/t/crosswalk?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = Crosswalk }
-  assertEqual "Correct path for crosswalk table" expected path)
+  let expected = "/t/crosswalk"
+  let queryPath = Q.path $ blankReadQuery { table = Crosswalk }
+  assertEqual "Correct path for crosswalk table" expected queryPath)
 
 healthcareTablePathTest = TestCase (do
-  let expected = "/t/health-care-providers-us?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = HealthCareProviders }
-  assertEqual "Correct path for health care providers table" expected path)
+  let expected = "/t/health-care-providers-us"
+  let queryPath = Q.path $ blankReadQuery { table = HealthCareProviders }
+  assertEqual "Correct path for health care providers table" expected queryPath)
 
 worldGeographiesTablePathTest = TestCase (do
-  let expected = "/t/world-geographies?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = WorldGeographies }
-  assertEqual "Correct path for world geographies table" expected path)
+  let expected = "/t/world-geographies"
+  let queryPath = Q.path $ blankReadQuery { table = WorldGeographies }
+  assertEqual "Correct path for world geographies table" expected queryPath)
 
 cpgTablePathTest = TestCase (do
-  let expected = "/t/products-cpg?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = ProductsCPG }
-  assertEqual "Correct path for products CPG table" expected path)
+  let expected = "/t/products-cpg"
+  let queryPath = Q.path $ blankReadQuery { table = ProductsCPG }
+  assertEqual "Correct path for products CPG table" expected queryPath)
 
 crosswalkProductsTablePathTest = TestCase (do
-  let expected = "/t/products-crosswalk?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = ProductsCrosswalk }
-  assertEqual "Correct path for products crosswalk table" expected path)
+  let expected = "/t/products-crosswalk"
+  let queryPath = Q.path $ blankReadQuery { table = ProductsCrosswalk }
+  assertEqual "Correct path for products crosswalk table" expected queryPath)
 
 monetizeTablePathTest = TestCase (do
-  let expected = "/places/monetize?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = Monetize }
-  assertEqual "Correct path for monetize table" expected path)
+  let expected = "/places/monetize"
+  let queryPath = Q.path $ blankReadQuery { table = Monetize }
+  assertEqual "Correct path for monetize table" expected queryPath)
 
 customTablePathTest = TestCase (do
-  let expected = "/t/foo?include_count=false"
-  let path = formRelativePath $ blankReadQuery { table = Custom "foo" }
-  assertEqual "Correct path for custom table" expected path)
+  let expected = "/t/foo"
+  let queryPath = Q.path $ blankReadQuery { table = Custom "foo" }
+  assertEqual "Correct path for custom table" expected queryPath)
 
-geopulsePathTest = TestCase (do
-  let expected = "/places/geopulse?geo=%7B%22%24point%22%3A%5B34.06021%2C-118.41828%5D%7D&select=commercial_density"
-  let path = formRelativePath $ G.GeopulseQuery { G.geo = Point 34.06021 (-118.41828) , G.select = ["commercial_density"] }
-  assertEqual "Correct path for geopulse" expected path)
+geopulseTest = TestCase (do
+  let query = G.GeopulseQuery { G.geo = Point 34.06021 (-118.41828) , G.select = ["commercial_density"] }
+  let queryPath = Q.path query
+  let queryParams = Q.params query
+  assertEqual "Correct path for geopulse" queryPath "/places/geopulse"
+  assertEqual "Correct geo param" (queryParams M.! "geo") "{\"$point\":[34.06021,-118.41828]}"
+  assertEqual "Correct select param" (queryParams M.! "select") "commercial_density")
 
-geocodePathTest = TestCase (do
-  let expected = "/places/geocode?geo=%7B%22%24point%22%3A%5B34.06021%2C-118.41828%5D%7D"
-  let path = formRelativePath $ GeocodeQuery $ Point 34.06021 (-118.41828)
-  assertEqual "Correct path for geocode" expected path)
+geocodeTest = TestCase (do
+  let query = GeocodeQuery $ Point 34.06021 (-118.41828)
+  let queryPath = Q.path query
+  let queryParams = Q.params query
+  assertEqual "Correct path for geocode" queryPath "/places/geocode"
+  assertEqual "Correct geo param" (queryParams M.! "geo") "{\"$point\":[34.06021,-118.41828]}")
 
 andSearchPathTest = TestCase (do
-  let expected = "/t/places?q=foo%20bar&include_count=false"
-  let path = formRelativePath $ blankReadQuery { search = AndSearch ["foo", "bar"] }
-  assertEqual "Correct path for ANDed search" expected path)
+  let query = blankReadQuery { search = AndSearch ["foo", "bar"] }
+  let queryParams = Q.params query
+  assertEqual "Correct query value" (queryParams M.! "q")  "foo bar")
 
 orSearchPathTest = TestCase (do
-  let expected = "/t/places?q=foo%2Cbar&include_count=false"
-  let path = formRelativePath $ blankReadQuery { search = OrSearch ["foo", "bar"] }
-  assertEqual "Correct path for ANDed search" expected path)
+  let query = blankReadQuery { search = OrSearch ["foo", "bar"] }
+  let queryParams = Q.params query
+  assertEqual "Correct query value" (queryParams M.! "q")  "foo,bar")
 
-selectPathTest = TestCase (do
-  let expected = "/t/places?select=foo%2Cbar&include_count=false"
-  let path = formRelativePath $ blankReadQuery { select = ["foo", "bar"] }
-  assertEqual "Correct path for select terms" expected path)
+selectTest = TestCase (do
+  let query = blankReadQuery { select = ["foo", "bar"] }
+  let queryParams = Q.params query
+  assertEqual "Correct select value" (queryParams M.! "select")  "foo,bar")
 
-limitPathTest = TestCase (do
-  let expected = "/t/places?limit=321&include_count=false"
-  let path = formRelativePath $ blankReadQuery { limit = Just 321 }
-  assertEqual "Correct path for limit" expected path)
+limitTest = TestCase (do
+  let query = blankReadQuery { limit = Just 321 }
+  let queryParams = Q.params query
+  assertEqual "Correct limit value" (queryParams M.! "limit") "321")
 
-offsetPathTest = TestCase (do
-  let expected = "/t/places?offset=321&include_count=false"
-  let path = formRelativePath $ blankReadQuery { offset = Just 321 }
-  assertEqual "Correct path for offset" expected path)
+offsetTest = TestCase (do
+  let query = blankReadQuery { offset = Just 321 }
+  let queryParams = Q.params query
+  assertEqual "Correct offset value" (queryParams M.! "offset") "321")
 
 equalNumFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A123.4%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [EqualNum "field" 123.4] }
-  assertEqual "Correct path for equal number filter" expected path)
+  let query = blankReadQuery { filters = [EqualNum "field" 123.4] }
+  let queryParams = Q.params query
+  assertEqual "Correct filters value" (queryParams M.! "filters") "{\"field\":123.4}")
 
 equalStrFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%22value%22%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [EqualStr "field" "value"] }
-  assertEqual "Correct path for equal string filter" expected path)
+  let query = blankReadQuery { filters = [EqualStr "field" "value"] }
+  let queryParams = Q.params query
+  assertEqual "Correct filters value" (queryParams M.! "filters") "{\"field\":\"value\"}")
 
 notEqualNumFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24neq%22%3A123.4%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [NotEqualNum "field" 123.4] }
-  assertEqual "Correct path for not equal number filter" expected path)
+  let query = blankReadQuery { filters = [NotEqualNum "field" 123.4] }
+  let queryParams = Q.params query
+  assertEqual "Correct filters value" (queryParams M.! "filters") "{\"field\":{\"$neq\":123.4}}")
 
 notEqualStrFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24neq%22%3A%22value%22%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [NotEqualStr "field" "value"] }
-  assertEqual "Correct path for not equal string filter" expected path)
+  let query = blankReadQuery { filters = [NotEqualStr "field" "value"] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$neq\":\"value\"}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 inNumListFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24in%22%3A%5B123.4%2C5432.1%5D%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [InNumList "field" [123.4, 5432.1]] }
-  assertEqual "Correct path for in number list filter" expected path)
+  let query = blankReadQuery { filters = [InNumList "field" [123.4, 5432.1]] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$in\":[123.4,5432.1]}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 inStrListFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24in%22%3A%5B%22value%22%2C%22other%22%5D%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [InStrList "field" ["value","other"]] }
-  assertEqual "Correct path for in string list filter" expected path)
+  let query = blankReadQuery { filters = [InStrList "field" ["value","other"]] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$in\":[\"value\",\"other\"]}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 notInNumListFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24nin%22%3A%5B123.4%2C5432.1%5D%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [NotInNumList "field" [123.4, 5432.1]] }
-  assertEqual "Correct path for not in number list filter" expected path)
+  let query = blankReadQuery { filters = [NotInNumList "field" [123.4, 5432.1]] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$nin\":[123.4,5432.1]}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 notInStrListFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24nin%22%3A%5B%22value%22%2C%22other%22%5D%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [NotInStrList "field" ["value","other"]] }
-  assertEqual "Correct path for not in string list filter" expected path)
+  let query = blankReadQuery { filters = [NotInStrList "field" ["value","other"]] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$nin\":[\"value\",\"other\"]}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 beginsWithFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24bw%22%3A%22val%22%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [BeginsWith "field" "val"] }
-  assertEqual "Correct path for begins with filter" expected path)
+  let query = blankReadQuery { filters = [BeginsWith "field" "val"] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$bw\":\"val\"}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 notBeginsWithFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24nbw%22%3A%22val%22%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [NotBeginsWith "field" "val"] }
-  assertEqual "Correct path for not begins with filter" expected path)
+  let query = blankReadQuery { filters = [NotBeginsWith "field" "val"] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$nbw\":\"val\"}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 beginsWithAnyFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24bwin%22%3A%5B%22val%22%2C%22ot%22%5D%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [BeginsWithAny "field" ["val","ot"]] }
-  assertEqual "Correct path for begins with any filter" expected path)
+  let query = blankReadQuery { filters = [BeginsWithAny "field" ["val","ot"]] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$bwin\":[\"val\",\"ot\"]}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 notBeginsWithAnyFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24nbwin%22%3A%5B%22val%22%2C%22ot%22%5D%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [NotBeginsWithAny "field" ["val","ot"]] }
-  assertEqual "Correct path for not begins with any filter" expected path)
+  let query = blankReadQuery { filters = [NotBeginsWithAny "field" ["val","ot"]] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$nbwin\":[\"val\",\"ot\"]}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 isBlankFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24blank%22%3Atrue%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [IsBlank "field"] }
-  assertEqual "Correct path for is blank filter" expected path)
+  let query = blankReadQuery { filters = [IsBlank "field"] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$blank\":true}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 isNotBlankFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22field%22%3A%7B%22%24blank%22%3Afalse%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [IsNotBlank "field"] }
-  assertEqual "Correct path for is not blank filter" expected path)
+  let query = blankReadQuery { filters = [IsNotBlank "field"] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$blank\":false}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 andFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22%24and%22%3A%5B%7B%22field1%22%3A%7B%22%24blank%22%3Atrue%7D%7D%2C%7B%22field2%22%3A%7B%22%24blank%22%3Afalse%7D%7D%5D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [And [IsBlank "field1", IsNotBlank "field2"]] }
-  assertEqual "Correct path for and filter" expected path)
+  let query = blankReadQuery { filters = [And [IsBlank "field1", IsNotBlank "field2"]] }
+  let queryParams = Q.params query
+  let expected = "{\"$and\":[{\"field1\":{\"$blank\":true}},{\"field2\":{\"$blank\":false}}]}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 orFilterTest = TestCase (do
-  let expected = "/t/places?filters=%7B%22%24or%22%3A%5B%7B%22field1%22%3A%7B%22%24blank%22%3Atrue%7D%7D%2C%7B%22field2%22%3A%7B%22%24blank%22%3Afalse%7D%7D%5D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { filters = [Or [IsBlank "field1", IsNotBlank "field2"]] }
-  assertEqual "Correct path for or filter" expected path)
+  let query = blankReadQuery { filters = [Or [IsBlank "field1", IsNotBlank "field2"]] }
+  let queryParams = Q.params query
+  let expected = "{\"$or\":[{\"field1\":{\"$blank\":true}},{\"field2\":{\"$blank\":false}}]}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
 geoTest = TestCase (do
-  let expected = "/t/places?geo=%7B%22%24circle%22%3A%7B%22%24center%22%3A%5B300.1%2C%20200.3%5D%2C%22%24meters%22%3A100.5%7D%7D&include_count=false"
-  let path = formRelativePath $ blankReadQuery { geo = Just (Circle 300.1 200.3 100.5) }
-  assertEqual "Correct path for geo" expected path)
+  let query = blankReadQuery { geo = Just (Circle 300.1 200.3 100.5) }
+  let queryParams = Q.params query
+  let expected = "{\"$circle\":{\"$center\":[300.1, 200.3],\"$meters\":100.5}}"
+  assertEqual "Correct geo value" (queryParams M.! "geo") expected)
 
 includeCountTest = TestCase (do
-  let expected = "/t/places?include_count=true"
-  let path = formRelativePath $ blankReadQuery { includeCount = True }
-  assertEqual "Correct path for include count" expected path)
+  let query = blankReadQuery { includeCount = True }
+  let queryParams = Q.params query
+  assertEqual "Correct include_count value" (queryParams M.! "include_count") "true")
 
 schemaQueryTest = TestCase (do
+  let queryPath = Q.path $ SchemaQuery Places
   let expected = "/t/places/schema"
-  let path = formRelativePath $ SchemaQuery Places
-  assertEqual "Correct path for a schema query" expected path)
+  assertEqual "Correct path for a schema query" queryPath expected)
 
 resolveQueryTest = TestCase (do
-  let expected = "/places/resolve?values=%7B%22field1%22%3A%22value1%22%2C%22field2%22%3A32.1%7D"
-  let path = formRelativePath $ ResolveQuery [ResolveStr "field1" "value1", ResolveNum "field2" 32.1]
-  assertEqual "Correct path for a resolve query" expected path)
+  let query = ResolveQuery [ResolveStr "field1" "value1", ResolveNum "field2" 32.1]
+  let queryPath = Q.path query
+  let queryParams = Q.params query
+  let expectedValues = "{\"field1\":\"value1\",\"field2\":32.1}"
+  assertEqual "Correct path" queryPath "/places/resolve"
+  assertEqual "Correct values" (queryParams M.! "values") expectedValues)
 
 facetsTest = TestCase (do
-  let expected = "/t/places/facets?q=starbucks&select=locality%2Cregion&filters=%7B%22country%22%3A%22US%22%7D&limit=10&min_count=2&include_count=false"
-  let path = formRelativePath $ F.FacetsQuery { F.table        = Places
-                                    , F.search       = AndSearch ["starbucks"]
-                                    , F.select       = ["locality", "region"]
-                                    , F.filters      = [EqualStr "country" "US"]
-                                    , F.geo          = Nothing
-                                    , F.limit        = Just 10
-                                    , F.minCount     = Just 2
-                                    , F.includeCount = False }
-  assertEqual "Correct path for a facets query" expected path)
+  let query = F.FacetsQuery { F.table        = Places
+                            , F.search       = AndSearch ["starbucks"]
+                            , F.select       = ["locality", "region"]
+                            , F.filters      = [EqualStr "country" "US"]
+                            , F.geo          = Nothing
+                            , F.limit        = Just 10
+                            , F.minCount     = Just 2
+                            , F.includeCount = False }
+  let queryPath = Q.path query
+  let queryParams = Q.params query
+  assertEqual "Correct path for a facets query" queryPath "/t/places/facets"
+  assertEqual "Correct q" (queryParams M.! "q") "starbucks"
+  assertEqual "Correct select" (queryParams M.! "select") "locality,region"
+  assertEqual "Correct filters" (queryParams M.! "filters") "{\"country\":\"US\"}"
+  assertEqual "Correct limit" (queryParams M.! "limit") "10"
+  assertEqual "Correct min count" (queryParams M.! "min_count") "2"
+  assertEqual "Correct include count" (queryParams M.! "include_count") "false")
 
 submitPathTest = TestCase (do
   let expected = "/t/places/foobar/submit"
-  let path = W.path submitWrite
-  assertEqual "Correct path for submit" expected path)
+  let writePath = W.path submitWrite
+  assertEqual "Correct path for submit" expected writePath)
 
 submitBodyTest = TestCase (do
   let expected = "user=user123&values={\"key\":\"val\"}"
-  let body = W.body submitWrite
-  assertEqual "Correct body for submit" expected body)
+  let bodyParams = W.body submitWrite
+  assertEqual "Correct user" (bodyParams M.! "user") "user123"
+  assertEqual "Correct values" (bodyParams M.! "values") "{\"key\":\"val\"}")
 
 flagPathTest = TestCase (do
   let expected = "/t/places/foobar/flag"
@@ -291,8 +321,12 @@ flagPathTest = TestCase (do
 
 flagBodyTest = TestCase (do
   let expected = "problem=Duplicate&user=user123&comment=There was a problem&debug=false"
-  let body = W.body flagWrite
-  assertEqual "Correct body for flag" expected body)
+  let bodyParams = W.body flagWrite
+  assertEqual "Correct problem" (bodyParams M.! "problem") "Duplicate"
+  assertEqual "Correct user" (bodyParams M.! "user") "user123"
+  assertEqual "Correct comment" (bodyParams M.! "comment") "There was a problem"
+  assertEqual "Correct debug" (bodyParams M.! "debug") "false")
+
 
 readIntegrationTest :: Token -> Test
 readIntegrationTest token = TestCase (do
@@ -304,24 +338,24 @@ readIntegrationTest token = TestCase (do
                         , includeCount = True
                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                         , filters = [EqualStr "name" "Stand"] }
-  result <- makeRequest token query
+  result <- executeQuery token query
   assertEqual "Valid read query" "ok" (status result))
 
 schemaIntegrationTest :: Token -> Test
 schemaIntegrationTest token = TestCase (do
   let query = SchemaQuery Places
-  result <- makeRequest token query
+  result <- executeQuery token query
   assertEqual "Valid schema query" "ok" (status result))
 
 resolveIntegrationTest :: Token -> Test
 resolveIntegrationTest token = TestCase (do
   let query = ResolveQuery [ResolveStr "name" "McDonalds"]
-  result <- makeRequest token query
+  result <- executeQuery token query
   assertEqual "Valid resolve query" "ok" (status result))
 
 rawIntegrationTest :: Token -> Test
 rawIntegrationTest token = TestCase (do
-  result <- makeRawRequest' token "/t/places?q=starbucks"
+  result <- get token "/t/places" (M.fromList [("q", "starbucks")])
   assertEqual "Valid read query" "ok" (status result))
 
 facetsIntegrationTest token = TestCase (do
@@ -333,18 +367,18 @@ facetsIntegrationTest token = TestCase (do
                             , F.limit        = Just 100
                             , F.minCount     = Just 1
                             , F.includeCount = False }
-  result <- makeRequest token query
+  result <- executeQuery token query
   assertEqual "Valid facets query" "ok" (status result))
 
 geopulseIntegrationTest token = TestCase (do
   let query = G.GeopulseQuery { G.geo    = Point 34.06021 (-118.41828)
                               , G.select = [] }
-  result <- makeRequest token query
+  result <- executeQuery token query
   assertEqual "Valid geopulse query" "ok" (status result))
 
 geocodeIntegrationTest token = TestCase (do
   let query = GeocodeQuery $ Point 34.06021 (-118.41828)
-  result <- makeRequest token query
+  result <- executeQuery token query
   assertEqual "Valid geopulse query" "ok" (status result))
 
 
@@ -359,14 +393,14 @@ multiIntegrationTest token = TestCase (do
                          , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                          , filters = [EqualStr "name" "Stand"] }
   let query2 = query1 { filters = [EqualStr "name" "Xerox"] }
-  results <- makeMultiRequest token $ M.fromList [("query1", query1), ("query2", query2)]
+  results <- executeMultiQuery token $ M.fromList [("query1", query1), ("query2", query2)]
   let result1 = results M.! "query1"
   let result2 = results M.! "query2"
   assertEqual "Valid multi query" ["ok","ok"] [status result1, status result2])
 
 errorIntegrationTest :: Token -> Test
 errorIntegrationTest token = TestCase (do
-  result <- makeRawRequest' token "/t/foobarbaz"
+  result <- get token "/t/foobarbaz" (M.empty)
   assertEqual "Invalud read query" "error" (status result))
 
 blankReadQuery :: ReadQuery
