@@ -22,6 +22,7 @@ This is a Haskell driver for [Factual's public API](http://developer.factual.com
 * Resolve Queries
 * Match Queries
 * Schema Queries
+* Diffs Queries
 * Multi Queries
 * Raw Read Queries
 * Parametric Search
@@ -57,11 +58,11 @@ To run the integration tests you'll need an API key and secret, but you
 can always run the unit tests:
 
     *Main> runUnitTests
-    Cases: 44  Tried: 44  Errors: 0  Failures: 0
-    Counts {cases = 44, tried = 44, errors = 0, failures = 0}
+    Cases: 45  Tried: 45  Errors: 0  Failures: 0
+    Counts {cases = 45, tried = 45, errors = 0, failures = 0}
     *Main> runIntegrationTests "mykey" "mysecret"
-    Cases: 10  Tried: 10  Errors: 0  Failures: 0
-    Counts {cases = 10, tried = 10, errors = 0, failures = 0}
+    Cases: 11  Tried: 11  Errors: 0  Failures: 0
+    Counts {cases = 11, tried = 11, errors = 0, failures = 0}
 
 # Documentation
 

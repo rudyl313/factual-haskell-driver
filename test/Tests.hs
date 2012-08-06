@@ -6,6 +6,7 @@ import Data.Factual.Query.ResolveQuery
 import Data.Factual.Query.GeocodeQuery
 import Data.Factual.Query.MatchQuery
 import Data.Factual.Response
+import qualified Data.Factual.Query.DiffsQuery as D
 import qualified Data.Factual.Query as Q
 import qualified Data.Map as M
 import qualified Data.Factual.Write as W
@@ -58,6 +59,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Resolve query test" resolveQueryTest
                      , TestLabel "Match query test" matchQueryTest
                      , TestLabel "Facets test" facetsTest
+                     , TestLabel "Diffs test" diffsTest
                      , TestLabel "Submit path test" submitPathTest
                      , TestLabel "Submit body test" submitBodyTest
                      , TestLabel "Flag path test" flagPathTest
@@ -69,6 +71,7 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                                        , TestLabel "Match test" (matchIntegrationTest token)
                                        , TestLabel "Raw read test" (rawIntegrationTest token)
                                        , TestLabel "Facets test" (facetsIntegrationTest token)
+                                       , TestLabel "Diffs test" (diffsIntegrationTest token)
                                        , TestLabel "Geopulse test" (geopulseIntegrationTest token)
                                        , TestLabel "Geocode test" (geocodeIntegrationTest token)
                                        , TestLabel "Multi test" (multiIntegrationTest token)
@@ -316,6 +319,14 @@ facetsTest = TestCase (do
   assertEqual "Correct min count" (queryParams M.! "min_count") "2"
   assertEqual "Correct include count" (queryParams M.! "include_count") "false")
 
+diffsTest = TestCase (do
+  let query = D.DiffsQuery { D.table = Places, D.start = 1318890505254, D.end = 1318890516892 }
+  let queryPath = Q.path query
+  let queryParams = Q.params query
+  assertEqual "Correct path for a diffs query" queryPath "/t/places/diffs"
+  assertEqual "Correct start" (queryParams M.! "start") "1318890505254"
+  assertEqual "Correct end" (queryParams M.! "end") "1318890516892")
+
 submitPathTest = TestCase (do
   let expected = "/t/places/foobar/submit"
   let writePath = W.path submitWrite
@@ -389,6 +400,11 @@ facetsIntegrationTest token = TestCase (do
                             , F.includeCount = False }
   result <- executeQuery token query
   assertEqual "Valid facets query" "ok" (status result))
+
+diffsIntegrationTest token = TestCase (do
+  let query = D.DiffsQuery { D.table = Places, D.start = 1318890505254, D.end = 1318890516892 }
+  result <- executeQuery token query
+  assertEqual "Valid diffs query" "ok" (status result))
 
 geopulseIntegrationTest token = TestCase (do
   let query = G.GeopulseQuery { G.geo    = Point 34.06021 (-118.41828)
