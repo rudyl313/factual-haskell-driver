@@ -26,11 +26,14 @@ instance Show ResolveValue where
 -- | A resolve query is formed as an array of resolve values. These values will
 --   be compared with Factual records to return a cleaner, more canonical row
 --   of data.
-data ResolveQuery = ResolveQuery [ResolveValue] deriving Eq
+data ResolveQuery = ResolveQuery { values :: [ResolveValue]
+                                 , debug  :: Bool
+                                 } deriving Eq
 
 -- ResolveQuery is a member of the Query typeclass so that it can be used to
 -- make requests.
 instance Query ResolveQuery where
-  path   _                     = "/places/resolve"
-  params (ResolveQuery values) = M.fromList [("values",valuesString)]
-    where valuesString = "{" ++ (join "," $ map show values) ++ "}"
+  path   _     = "/places/resolve"
+  params query = M.fromList [("values", valuesString), ("debug", debugString)]
+    where valuesString = "{" ++ (join "," $ map show $ values query) ++ "}"
+          debugString  = if (debug query) then "true" else "false"

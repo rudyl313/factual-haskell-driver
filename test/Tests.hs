@@ -4,6 +4,7 @@ import Data.Factual.Query.ReadQuery
 import Data.Factual.Query.SchemaQuery
 import Data.Factual.Query.ResolveQuery
 import Data.Factual.Query.GeocodeQuery
+import Data.Factual.Query.MatchQuery
 import Data.Factual.Response
 import qualified Data.Factual.Query as Q
 import qualified Data.Map as M
@@ -55,6 +56,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Include count test" includeCountTest
                      , TestLabel "Schema query test" schemaQueryTest
                      , TestLabel "Resolve query test" resolveQueryTest
+                     , TestLabel "Match query test" matchQueryTest
                      , TestLabel "Facets test" facetsTest
                      , TestLabel "Submit path test" submitPathTest
                      , TestLabel "Submit body test" submitBodyTest
@@ -64,6 +66,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
 integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationTest token)
                                        , TestLabel "Schema test" (schemaIntegrationTest token)
                                        , TestLabel "Resolve test" (resolveIntegrationTest token)
+                                       , TestLabel "Match test" (matchIntegrationTest token)
                                        , TestLabel "Raw read test" (rawIntegrationTest token)
                                        , TestLabel "Facets test" (facetsIntegrationTest token)
                                        , TestLabel "Geopulse test" (geopulseIntegrationTest token)
@@ -277,11 +280,21 @@ schemaQueryTest = TestCase (do
   assertEqual "Correct path for a schema query" queryPath expected)
 
 resolveQueryTest = TestCase (do
-  let query = ResolveQuery [ResolveStr "field1" "value1", ResolveNum "field2" 32.1]
+  let query = ResolveQuery { values = [ResolveStr "field1" "value1", ResolveNum "field2" 32.1],
+                             debug  = False }
   let queryPath = Q.path query
   let queryParams = Q.params query
   let expectedValues = "{\"field1\":\"value1\",\"field2\":32.1}"
   assertEqual "Correct path" queryPath "/places/resolve"
+  assertEqual "Correct values" (queryParams M.! "values") expectedValues
+  assertEqual "Correct debug" (queryParams M.! "debug") "false")
+
+matchQueryTest = TestCase (do
+  let query = MatchQuery [MatchStr "field1" "value1", MatchNum "field2" 32.1]
+  let queryPath = Q.path query
+  let queryParams = Q.params query
+  let expectedValues = "{\"field1\":\"value1\",\"field2\":32.1}"
+  assertEqual "Correct path" queryPath "/places/match"
   assertEqual "Correct values" (queryParams M.! "values") expectedValues)
 
 facetsTest = TestCase (do
@@ -349,9 +362,16 @@ schemaIntegrationTest token = TestCase (do
 
 resolveIntegrationTest :: Token -> Test
 resolveIntegrationTest token = TestCase (do
-  let query = ResolveQuery [ResolveStr "name" "McDonalds"]
+  let query = ResolveQuery { values = [ResolveStr "name" "McDonalds"],
+                             debug = False }
   result <- executeQuery token query
   assertEqual "Valid resolve query" "ok" (status result))
+
+matchIntegrationTest :: Token -> Test
+matchIntegrationTest token = TestCase (do
+  let query = MatchQuery [MatchStr "name" "McDonalds"]
+  result <- executeQuery token query
+  assertEqual "Valid match query" "ok" (status result))
 
 rawIntegrationTest :: Token -> Test
 rawIntegrationTest token = TestCase (do
