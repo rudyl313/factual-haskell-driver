@@ -75,6 +75,8 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                                        , TestLabel "Geopulse test" (geopulseIntegrationTest token)
                                        , TestLabel "Geocode test" (geocodeIntegrationTest token)
                                        , TestLabel "Multi test" (multiIntegrationTest token)
+                                       , TestLabel "Submit test" (submitIntegrationTest token)
+                                       , TestLabel "Flag test" (flagIntegrationTest token)
                                        , TestLabel "Error test" (errorIntegrationTest token) ]
                             where token = generateToken key secret
 
@@ -433,6 +435,31 @@ multiIntegrationTest token = TestCase (do
   let result1 = results M.! "query1"
   let result2 = results M.! "query2"
   assertEqual "Valid multi query" ["ok","ok"] [status result1, status result2])
+
+submitIntegrationTest :: Token -> Test
+submitIntegrationTest token = TestCase (do
+  let newValues = M.fromList [ ("name","Factual")
+                             , ("address","1801 Avenue of the Stars, Suite 1450")
+                             , ("country","USA")
+                             , ("locality","Los Angeles") ]
+  let write = S.Submit { S.table     = Custom "t7RSEV"
+                       , S.user      = "drivertest"
+                       , S.factualId = Nothing
+                       , S.values    = newValues }
+  result <- executeWrite token write
+  assertEqual "Valid submit" "ok" (status result))
+
+flagIntegrationTest :: Token -> Test
+flagIntegrationTest token = TestCase (do
+  let write = L.Flag { L.table     = Custom "t7RSEV"
+                     , L.user      = "drivertest"
+                     , L.factualId = "f33527e0-a8b4-4808-a820-2686f18cb00c"
+                     , L.problem   = L.Inaccurate
+                     , L.comment   = Nothing
+                     , L.debug     = False
+                     , L.reference = Nothing }
+  result <- executeWrite token write
+  assertEqual "Valid flag" "ok" (status result))
 
 errorIntegrationTest :: Token -> Test
 errorIntegrationTest token = TestCase (do

@@ -22,6 +22,7 @@ import Data.Attoparsec.Number
 import qualified Data.HashMap.Lazy as L
 import qualified Data.Text as T
 import qualified Data.Vector as V
+import Debug.Trace
 
 -- | A response object has a status (that will be ok if the query was successful
 --   and error if the query failed), a version (which should always be 3.0) and
@@ -37,8 +38,8 @@ data Response = Response { status       :: String
 --   the API into a Response value.
 fromValue :: Value -> Response
 fromValue value
-  | respStatus == "error" = formErrorResponse value
-  | otherwise             = formValidResponse value
+  | respStatus == "ok" = formValidResponse value
+  | otherwise          = formErrorResponse value
   where respStatus = lookupString "status" value
 
 -- | This function can be used to convert an Aeson Array value into a vanilla
@@ -69,7 +70,7 @@ lookupValueSafe key (Object x) = L.lookup (T.pack key) x
 
 -- The following helper functions aid the lookup functions.
 formErrorResponse :: Value -> Response
-formErrorResponse value = Response { status = "error"
+formErrorResponse value = Response { status = lookupString "status" value
                                    , version = lookupNumber "version" value
                                    , response = Null
                                    , errorMessage = Just $ lookupString "message" value
@@ -81,6 +82,7 @@ formValidResponse value = Response { status = "ok"
                                    , response = lookupValue "response" value
                                    , errorMessage = Nothing
                                    , errorType = Nothing }
+
 extractString :: Value -> String
 extractString (String x) = T.unpack x
 
