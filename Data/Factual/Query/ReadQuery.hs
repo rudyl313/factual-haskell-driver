@@ -6,6 +6,7 @@ module Data.Factual.Query.ReadQuery
     -- * Required modules
   , module Data.Factual.Shared.Table
   , module Data.Factual.Shared.Search
+  , module Data.Factual.Shared.SortOrder
   , module Data.Factual.Shared.Filter
   , module Data.Factual.Shared.Geo
   ) where
@@ -13,6 +14,7 @@ module Data.Factual.Query.ReadQuery
 import Data.Factual.Query
 import Data.Factual.Shared.Table
 import Data.Factual.Shared.Search
+import Data.Factual.Shared.SortOrder
 import Data.Factual.Shared.Filter
 import Data.Factual.Shared.Geo
 import Data.Factual.Utils
@@ -31,6 +33,7 @@ data ReadQuery = ReadQuery { table        :: Table
                            , offset       :: Maybe Int
                            , filters      :: [Filter]
                            , geo          :: Maybe Geo
+                           , sort         :: [SortOrder]
                            , includeCount :: Bool
                            } deriving (Eq, Show)
 
@@ -45,6 +48,7 @@ instance Query ReadQuery where
                             , offsetPair       $ offset query
                             , filtersPair      $ filters query
                             , geoPair          $ geo query
+                            , sortPair         $ sort query
                             , includeCountPair $ includeCount query ]
 
 -- The following helper functions are used in generating query Strings.

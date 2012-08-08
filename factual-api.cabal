@@ -42,6 +42,7 @@ library
     Data.Factual.Shared.Filter
     Data.Factual.Shared.Geo
     Data.Factual.Shared.Search
+    Data.Factual.Shared.SortOrder
     Data.Factual.Shared.Table
 
   other-modules:

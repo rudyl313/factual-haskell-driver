@@ -28,6 +28,11 @@ data Filter = EqualNum Field Double -- ^ A numeric field has to match a number e
             | NotBeginsWithAny Field [String] -- ^ A string field must not begin with any of the strings in a list.
             | IsBlank Field -- ^ A field must be blank.
             | IsNotBlank Field -- ^ A field must not be blank.
+            | GreaterThan Field Double -- ^ A field must be greater than the given value.
+            | GreaterThanOrEqualTo Field Double -- ^ A field must be greater than or equal to the given value.
+            | LessThan Field Double -- ^ A field must be less than the given value.
+            | LessThanOrEqualTo Field Double -- ^ A field must be less than or equal to the given value.
+            | SearchFilter Field String -- ^ A field must match of full text search with the given string.
             | And [Filter] -- ^ Form an AND condition with the filters in the list.
             | Or [Filter] -- ^ Form an OR condition with the filters in the list.
             deriving Eq
@@ -48,6 +53,11 @@ instance Show Filter where
   show (NotBeginsWithAny field strs) = (show field) ++ ":{" ++ (show "$nbwin") ++ ":[" ++ (join "," $ map show strs) ++ "]}"
   show (IsBlank field) = (show field) ++ ":{\"$blank\":true}"
   show (IsNotBlank field) = (show field) ++ ":{\"$blank\":false}"
+  show (GreaterThan field num) = (show field) ++ ":{" ++ (show "$gt") ++ ":" ++ (show num) ++ "}"
+  show (GreaterThanOrEqualTo field num) = (show field) ++ ":{" ++ (show "$gte") ++ ":" ++ (show num) ++ "}"
+  show (LessThan field num) = (show field) ++ ":{" ++ (show "$lt") ++ ":" ++ (show num) ++ "}"
+  show (LessThanOrEqualTo field num) = (show field) ++ ":{" ++ (show "$lte") ++ ":" ++ (show num) ++ "}"
+  show (SearchFilter field str) = (show field) ++ ":{" ++ (show "$search") ++ ":" ++ (show str) ++ "}"
   show (And filters) = (show "$and") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
   show (Or filters) = (show "$or") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
 

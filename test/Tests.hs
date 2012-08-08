@@ -51,9 +51,15 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Not begins with any filter test" notBeginsWithAnyFilterTest
                      , TestLabel "Is blank filter test" isBlankFilterTest
                      , TestLabel "Is not blank filter test" isNotBlankFilterTest
+                     , TestLabel "Greater than number filter test" greaterThanFilterTest
+                     , TestLabel "Greater than or equal to number filter test" greaterThanOrEqualToFilterTest
+                     , TestLabel "Less than number filter test" lessThanFilterTest
+                     , TestLabel "Less than or equal to number filter test" lessThanOrEqualToFilterTest
+                     , TestLabel "Search filter test" searchFilterTest
                      , TestLabel "And filter test" andFilterTest
                      , TestLabel "Or filter test" orFilterTest
                      , TestLabel "Geo test" geoTest
+                     , TestLabel "Sort test" sortTest
                      , TestLabel "Include count test" includeCountTest
                      , TestLabel "Schema query test" schemaQueryTest
                      , TestLabel "Resolve query test" resolveQueryTest
@@ -256,6 +262,35 @@ isNotBlankFilterTest = TestCase (do
   let expected = "{\"field\":{\"$blank\":false}}"
   assertEqual "Correct filters value" (queryParams M.! "filters") expected)
 
+greaterThanFilterTest = TestCase (do
+  let query = blankReadQuery { filters = [GreaterThan "field" 10.0] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$gt\":10.0}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
+
+greaterThanOrEqualToFilterTest = TestCase (do
+  let query = blankReadQuery { filters = [GreaterThanOrEqualTo "field" 10.0] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$gte\":10.0}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
+
+lessThanFilterTest = TestCase (do
+  let query = blankReadQuery { filters = [LessThan "field" 10.0] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$lt\":10.0}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
+
+lessThanOrEqualToFilterTest = TestCase (do
+  let query = blankReadQuery { filters = [LessThanOrEqualTo "field" 10.0] }
+  let queryParams = Q.params query
+  let expected = "{\"field\":{\"$lte\":10.0}}"
+  assertEqual "Correct filters value" (queryParams M.! "filters") expected)
+
+searchFilterTest = TestCase (do
+  let query = blankReadQuery { filters = [SearchFilter "field" "value"] }
+  let queryParams = Q.params query
+  assertEqual "Correct filters value" (queryParams M.! "filters") "{\"field\":{\"$search\":\"value\"}}")
+
 andFilterTest = TestCase (do
   let query = blankReadQuery { filters = [And [IsBlank "field1", IsNotBlank "field2"]] }
   let queryParams = Q.params query
@@ -273,6 +308,12 @@ geoTest = TestCase (do
   let queryParams = Q.params query
   let expected = "{\"$circle\":{\"$center\":[300.1, 200.3],\"$meters\":100.5}}"
   assertEqual "Correct geo value" (queryParams M.! "geo") expected)
+
+sortTest = TestCase (do
+  let query = blankReadQuery { sort = [Asc "name", Desc "country"] }
+  let queryParams = Q.params query
+  let expected = "name:asc,country:desc"
+  assertEqual "Correct sort value" (queryParams M.! "sort") expected)
 
 includeCountTest = TestCase (do
   let query = blankReadQuery { includeCount = True }
@@ -363,6 +404,7 @@ readIntegrationTest token = TestCase (do
                         , offset = Just 10
                         , includeCount = True
                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
+                        , sort = []
                         , filters = [EqualStr "name" "Stand"] }
   result <- executeQuery token query
   assertEqual "Valid read query" "ok" (status result))
@@ -429,6 +471,7 @@ multiIntegrationTest token = TestCase (do
                          , offset = Just 10
                          , includeCount = True
                          , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
+                         , sort = []
                          , filters = [EqualStr "name" "Stand"] }
   let query2 = query1 { filters = [EqualStr "name" "Xerox"] }
   results <- executeMultiQuery token $ M.fromList [("query1", query1), ("query2", query2)]
@@ -474,6 +517,7 @@ blankReadQuery = ReadQuery { table = Places
                            , offset = Nothing
                            , filters = []
                            , geo = Nothing
+                           , sort = []
                            , includeCount = False }
 
 submitWrite :: S.Submit

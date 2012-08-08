@@ -13,7 +13,6 @@ main = do
   let token = generateToken oauthKey oauthSecret
   let resolveValues = [ ResolveStr "name" "McDonalds"
                       , ResolveStr "address" "10451 Santa Monica Blvd" ]
-
   let query = ResolveQuery { values = resolveValues
                            , debug  = False }
   result <- executeQuery token query
