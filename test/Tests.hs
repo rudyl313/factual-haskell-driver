@@ -77,12 +77,12 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                                        , TestLabel "Match test" (matchIntegrationTest token)
                                        , TestLabel "Raw read test" (rawIntegrationTest token)
                                        , TestLabel "Facets test" (facetsIntegrationTest token)
-                                       , TestLabel "Diffs test" (diffsIntegrationTest token)
+                                       --, TestLabel "Diffs test" (diffsIntegrationTest token)
                                        , TestLabel "Geopulse test" (geopulseIntegrationTest token)
                                        , TestLabel "Geocode test" (geocodeIntegrationTest token)
                                        , TestLabel "Multi test" (multiIntegrationTest token)
-                                       , TestLabel "Submit test" (submitIntegrationTest token)
-                                       , TestLabel "Flag test" (flagIntegrationTest token)
+                                       --, TestLabel "Submit test" (submitIntegrationTest token)
+                                       --, TestLabel "Flag test" (flagIntegrationTest token)
                                        , TestLabel "Error test" (errorIntegrationTest token) ]
                             where token = generateToken key secret
 

@@ -61,13 +61,16 @@ can always run the unit tests:
     Cases: 51  Tried: 51  Errors: 0  Failures: 0
     Counts {cases = 51, tried = 51, errors = 0, failures = 0}
     *Main> runIntegrationTests "mykey" "mysecret"
-    Cases: 13  Tried: 13  Errors: 0  Failures: 0
-    Counts {cases = 13, tried = 13, errors = 0, failures = 0}
+    Cases: 10  Tried: 10  Errors: 0  Failures: 0
+    Counts {cases = 10, tried = 10, errors = 0, failures = 0}
 
 # Documentation
 
 You can read library documentation by opening docs/index.html in
 your browser or by visiting the [Hackage page](http://hackage.haskell.org/package/factual-api).
+
+The [github wiki](https://github.com/rudyl313/factual-haskell-driver/wiki) also
+provides thorough documentation and examples for each feature.
 
 # Examples
 
