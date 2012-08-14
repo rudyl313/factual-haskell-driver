@@ -61,8 +61,8 @@ can always run the unit tests:
     Cases: 51  Tried: 51  Errors: 0  Failures: 0
     Counts {cases = 51, tried = 51, errors = 0, failures = 0}
     *Main> runIntegrationTests "mykey" "mysecret"
-    Cases: 10  Tried: 10  Errors: 0  Failures: 0
-    Counts {cases = 10, tried = 10, errors = 0, failures = 0}
+    Cases: 11  Tried: 11  Errors: 0  Failures: 0
+    Counts {cases = 11, tried = 11, errors = 0, failures = 0}
 
 # Documentation
 

@@ -16,9 +16,10 @@ module Network.Factual.API
   , debugWrite
     -- * The hoauth Token type
   , Token(..)
+  , urlEncode
   ) where
 
-import Network.HTTP.Base (urlEncode)
+import Debug.Trace
 import Data.Maybe (fromJust)
 import Data.List (intersperse)
 import Network.OAuth.Consumer
@@ -26,12 +27,17 @@ import Network.OAuth.Http.Request (Request(..), Method(..), parseURL, fromList)
 import Network.OAuth.Http.Response (Response(..))
 import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
 import Data.Aeson (Value, decode)
+import Data.Aeson.Encode (encode)
 import Data.Factual.Query
 import Data.Factual.Utils
 import qualified Data.Factual.Write as W
 import qualified Data.Map as M
 import qualified Data.ByteString.Lazy.Char8 as B
+import qualified Data.ByteString.Lazy.UTF8 as BU
+import qualified Data.ByteString.Lazy as BN
 import qualified Data.Factual.Response as F
+import qualified Codec.Binary.Url as U
+import qualified Codec.Binary.UTF8.String as S
 
 -- | Key and Secret are both Strings used to create a Token
 type Key    = String
@@ -153,7 +159,11 @@ setupOAuth request = do
   serviceRequest CurlClient oauthRequest
 
 extractJSON :: Response -> Value
-extractJSON = fromJust . decode . rspPayload
+extractJSON r = fromJust $ decode $ BU.fromString (trace str str)
+  where str = S.decode $ BN.unpack $ rspPayload r
+
+urlEncode :: String -> String
+urlEncode = U.encode . S.encode
 
 headersList :: [(String, String)]
 headersList = [("X-Factual-Lib", "factual-haskell-driver-0.5.0")]

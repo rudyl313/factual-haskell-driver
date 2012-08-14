@@ -72,6 +72,7 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Flag body test" flagBodyTest ]
 
 integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationTest token)
+                                       , TestLabel "Unicode test" (unicodeIntegrationTest token)
                                        , TestLabel "Schema test" (schemaIntegrationTest token)
                                        , TestLabel "Resolve test" (resolveIntegrationTest token)
                                        , TestLabel "Match test" (matchIntegrationTest token)
@@ -406,6 +407,20 @@ readIntegrationTest token = TestCase (do
                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                         , sort = []
                         , filters = [EqualStr "name" "Stand"] }
+  result <- executeQuery token query
+  assertEqual "Valid read query" "ok" (status result))
+
+unicodeIntegrationTest :: Token -> Test
+unicodeIntegrationTest token = TestCase (do
+  let query = ReadQuery { table = Global
+                        , search = AndSearch ["משה"]
+                        , select = []
+                        , limit = Nothing
+                        , offset = Nothing
+                        , includeCount = False
+                        , geo = Nothing
+                        , sort = []
+                        , filters = [] }
   result <- executeQuery token query
   assertEqual "Valid read query" "ok" (status result))
 
