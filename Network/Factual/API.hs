@@ -19,7 +19,6 @@ module Network.Factual.API
   , urlEncode
   ) where
 
-import Debug.Trace
 import Data.Maybe (fromJust)
 import Data.List (intersperse)
 import Network.OAuth.Consumer
@@ -33,8 +32,6 @@ import Data.Factual.Utils
 import qualified Data.Factual.Write as W
 import qualified Data.Map as M
 import qualified Data.ByteString.Lazy.Char8 as B
-import qualified Data.ByteString.Lazy.UTF8 as BU
-import qualified Data.ByteString.Lazy as BN
 import qualified Data.Factual.Response as F
 import qualified Codec.Binary.Url as U
 import qualified Codec.Binary.UTF8.String as S
@@ -159,8 +156,7 @@ setupOAuth request = do
   serviceRequest CurlClient oauthRequest
 
 extractJSON :: Response -> Value
-extractJSON r = fromJust $ decode $ BU.fromString (trace str str)
-  where str = S.decode $ BN.unpack $ rspPayload r
+extractJSON = fromJust . decode . rspPayload
 
 urlEncode :: String -> String
 urlEncode = U.encode . S.encode
