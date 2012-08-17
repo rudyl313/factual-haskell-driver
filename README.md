@@ -68,8 +68,7 @@ can always run the unit tests:
 
 # Documentation
 
-You can read library documentation by opening docs/index.html in
-your browser or by visiting the [Hackage page](http://hackage.haskell.org/package/factual-api).
+You can read library documentation by visiting the [Hackage page](http://hackage.haskell.org/package/factual-api).
 
 The [github wiki](https://github.com/rudyl313/factual-haskell-driver/wiki) also
 provides thorough documentation and examples for each feature.
