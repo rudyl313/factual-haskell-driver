@@ -1,7 +1,7 @@
 -- | This module exports the type used to create geopulse queries.
 module Data.Factual.Query.GeopulseQuery
   (
-    -- * ResolveQuery type
+    -- * GeopulseQuery type
     GeopulseQuery(..)
     -- * Required modules
   , module Data.Factual.Shared.Geo
