@@ -38,8 +38,7 @@ and [The Haskell Platform 2012.2.0.0](http://hackage.haskell.org/platform/).
 Please follow the installation instructions for your specific
 platform to install ghc and The Haskell Platform.
 
-You'll need a Factual account to use this dirver. If you don't have one yet, [it's free and easy to get one](https://www.factual.com/api-keys/request).
-
+You'll need a Factual account to use this driver. If you don't have one yet, [it's free and easy to get one](https://www.factual.com/api-keys/request).
 
 ## Installation from cabal
 
