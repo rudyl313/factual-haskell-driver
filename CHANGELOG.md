@@ -1,3 +1,6 @@
+## 0.5.1 ()
+  - Added the Insert write type
+
 ## 0.5.0 (August 8, 2012)
   - Modified Raw Read function (get) to take a path and a Map of query
     parameters instead of just a query string

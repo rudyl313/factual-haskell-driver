@@ -60,8 +60,8 @@ To run the integration tests you'll need an API key and secret, but you
 can always run the unit tests:
 
     *Main> runUnitTests
-    Cases: 51  Tried: 51  Errors: 0  Failures: 0
-    Counts {cases = 51, tried = 51, errors = 0, failures = 0}
+    Cases: 53  Tried: 53  Errors: 0  Failures: 0
+    Counts {cases = 53, tried = 53, errors = 0, failures = 0}
     *Main> runIntegrationTests "mykey" "mysecret"
     Cases: 11  Tried: 11  Errors: 0  Failures: 0
     Counts {cases = 11, tried = 11, errors = 0, failures = 0}

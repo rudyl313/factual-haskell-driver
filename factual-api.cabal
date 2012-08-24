@@ -38,6 +38,7 @@ library
     Data.Factual.Write
     Data.Factual.Write.Flag
     Data.Factual.Write.Submit
+    Data.Factual.Write.Insert
     Data.Factual.Response
     Data.Factual.Shared.Filter
     Data.Factual.Shared.Geo

@@ -13,6 +13,7 @@ import qualified Data.Factual.Write as W
 import qualified Data.Factual.Query.FacetsQuery as F
 import qualified Data.Factual.Query.GeopulseQuery as G
 import qualified Data.Factual.Write.Submit as S
+import qualified Data.Factual.Write.Insert as I
 import qualified Data.Factual.Write.Flag as L
 
 runUnitTests = runTestTT unitTests
@@ -68,6 +69,8 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Diffs test" diffsTest
                      , TestLabel "Submit path test" submitPathTest
                      , TestLabel "Submit body test" submitBodyTest
+                     , TestLabel "Insert path test" insertPathTest
+                     , TestLabel "Insert body test" insertBodyTest
                      , TestLabel "Flag path test" flagPathTest
                      , TestLabel "Flag body test" flagBodyTest ]
 
@@ -83,6 +86,7 @@ integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationT
                                        , TestLabel "Geocode test" (geocodeIntegrationTest token)
                                        , TestLabel "Multi test" (multiIntegrationTest token)
                                        --, TestLabel "Submit test" (submitIntegrationTest token)
+                                       --, TestLabel "Insert test" (insertIntegrationTest token)
                                        --, TestLabel "Flag test" (flagIntegrationTest token)
                                        , TestLabel "Error test" (errorIntegrationTest token) ]
                             where token = generateToken key secret
@@ -382,6 +386,17 @@ submitBodyTest = TestCase (do
   assertEqual "Correct user" (bodyParams M.! "user") "user123"
   assertEqual "Correct values" (bodyParams M.! "values") "{\"key\":\"val\"}")
 
+insertPathTest = TestCase (do
+  let expected = "/t/places/foobar/insert"
+  let writePath = W.path insertWrite
+  assertEqual "Correct path for insert" expected writePath)
+
+insertBodyTest = TestCase (do
+  let expected = "user=user123&values={\"key\":\"val\"}"
+  let bodyParams = W.body insertWrite
+  assertEqual "Correct user" (bodyParams M.! "user") "user123"
+  assertEqual "Correct values" (bodyParams M.! "values") "{\"key\":\"val\"}")
+
 flagPathTest = TestCase (do
   let expected = "/t/places/foobar/flag"
   let path = W.path flagWrite
@@ -507,6 +522,19 @@ submitIntegrationTest token = TestCase (do
   result <- executeWrite token write
   assertEqual "Valid submit" "ok" (status result))
 
+insertIntegrationTest :: Token -> Test
+insertIntegrationTest token = TestCase (do
+  let newValues = M.fromList [ ("name","Factual")
+                             , ("address","1801 Avenue of the Stars, Suite 1450")
+                             , ("country","USA")
+                             , ("locality","Los Angeles") ]
+  let write = I.Insert { I.table     = Custom "canada-edge"
+                       , I.user      = "drivertest"
+                       , I.factualId = Nothing
+                       , I.values    = newValues }
+  result <- executeWrite token write
+  assertEqual "Valid insert" "ok" (status result))
+
 flagIntegrationTest :: Token -> Test
 flagIntegrationTest token = TestCase (do
   let write = L.Flag { L.table     = Custom "canada-edge"
@@ -540,6 +568,12 @@ submitWrite = S.Submit { S.table     = Places
                        , S.user      = "user123"
                        , S.factualId = Just "foobar"
                        , S.values    = M.fromList [("key", "val")] }
+
+insertWrite :: I.Insert
+insertWrite = I.Insert { I.table     = Places
+                       , I.user      = "user123"
+                       , I.factualId = Just "foobar"
+                       , I.values    = M.fromList [("key", "val")] }
 
 flagWrite :: L.Flag
 flagWrite = L.Flag { L.table     = Places
