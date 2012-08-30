@@ -8,8 +8,8 @@ module Data.Factual.Query.MatchQuery
   ) where
 
 import Data.Factual.Query
-import Data.Factual.Utils
 import qualified Data.Map as M
+import Data.List.Utils (join)
 
 -- | A match value can either be a String or a Number (Double). The first
 --   argument is the name of the field and the second argument is the input

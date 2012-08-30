@@ -7,7 +7,7 @@ module Data.Factual.Shared.SortOrder
   , sortPair
   ) where
 
-import Data.Factual.Utils
+import Data.List.Utils (join)
 
 -- | The SortOrder type is used to represent sorting parameters
 data SortOrder = Asc String | Desc String deriving Eq

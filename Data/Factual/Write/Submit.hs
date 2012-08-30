@@ -10,8 +10,8 @@ module Data.Factual.Write.Submit
 import Data.Factual.Write
 import Data.Factual.Shared.Table
 import Data.Maybe (fromJust)
-import Data.Factual.Utils
 import qualified Data.Map as M
+import Data.List.Utils (join)
 
 -- | The Submit type represents a Write to the API which performs an upsert
 --   (a row can be updated or a new row can be written). The table and user

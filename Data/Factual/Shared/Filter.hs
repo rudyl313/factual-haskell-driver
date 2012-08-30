@@ -8,7 +8,7 @@ module Data.Factual.Shared.Filter
   , filtersPair
   ) where
 
-import Data.Factual.Utils
+import Data.List.Utils (join, replace)
 
 -- | A Field is a String representation of the field name.
 type Field = String
@@ -39,31 +39,34 @@ data Filter = EqualNum Field Double -- ^ A numeric field has to match a number e
 
 -- Filter is a member of Show to help generate query strings.
 instance Show Filter where
-  show (EqualNum field num) = (show field) ++ ":" ++ (show num)
-  show (EqualStr field str) = (show field) ++ ":" ++ (show str)
-  show (NotEqualNum field num) = (show field) ++ ":{" ++ (show "$neq") ++ ":" ++ (show num) ++ "}"
-  show (NotEqualStr field str) = (show field) ++ ":{" ++ (show "$neq") ++ ":" ++ (show str) ++ "}"
-  show (InNumList field nums) = (show field) ++ ":{" ++ (show "$in") ++ ":[" ++ (join "," $ map show nums) ++ "]}"
-  show (InStrList field strs) = (show field) ++ ":{" ++ (show "$in") ++ ":[" ++ (join "," $ map show strs) ++ "]}"
-  show (NotInNumList field nums) = (show field) ++ ":{" ++ (show "$nin") ++ ":[" ++ (join "," $ map show nums) ++ "]}"
-  show (NotInStrList field strs) = (show field) ++ ":{" ++ (show "$nin") ++ ":[" ++ (join "," $ map show strs) ++ "]}"
-  show (BeginsWith field str) = (show field) ++ ":{" ++ (show "$bw") ++ ":" ++ (show str) ++ "}"
-  show (NotBeginsWith field str) = (show field) ++ ":{" ++ (show "$nbw") ++ ":" ++ (show str) ++ "}"
-  show (BeginsWithAny field strs) = (show field) ++ ":{" ++ (show "$bwin") ++ ":[" ++ (join "," $ map show strs) ++ "]}"
-  show (NotBeginsWithAny field strs) = (show field) ++ ":{" ++ (show "$nbwin") ++ ":[" ++ (join "," $ map show strs) ++ "]}"
-  show (IsBlank field) = (show field) ++ ":{\"$blank\":true}"
-  show (IsNotBlank field) = (show field) ++ ":{\"$blank\":false}"
-  show (GreaterThan field num) = (show field) ++ ":{" ++ (show "$gt") ++ ":" ++ (show num) ++ "}"
-  show (GreaterThanOrEqualTo field num) = (show field) ++ ":{" ++ (show "$gte") ++ ":" ++ (show num) ++ "}"
-  show (LessThan field num) = (show field) ++ ":{" ++ (show "$lt") ++ ":" ++ (show num) ++ "}"
-  show (LessThanOrEqualTo field num) = (show field) ++ ":{" ++ (show "$lte") ++ ":" ++ (show num) ++ "}"
-  show (SearchFilter field str) = (show field) ++ ":{" ++ (show "$search") ++ ":" ++ (show str) ++ "}"
+  show (EqualNum field num) = (showStr field) ++ ":" ++ (show num)
+  show (EqualStr field str) = (showStr field) ++ ":" ++ (showStr str)
+  show (NotEqualNum field num) = (showStr field) ++ ":{" ++ (show "$neq") ++ ":" ++ (show num) ++ "}"
+  show (NotEqualStr field str) = (showStr field) ++ ":{" ++ (show "$neq") ++ ":" ++ (showStr str) ++ "}"
+  show (InNumList field nums) = (showStr field) ++ ":{" ++ (show "$in") ++ ":[" ++ (join "," $ map show nums) ++ "]}"
+  show (InStrList field strs) = (showStr field) ++ ":{" ++ (show "$in") ++ ":[" ++ (join "," $ map showStr strs) ++ "]}"
+  show (NotInNumList field nums) = (showStr field) ++ ":{" ++ (show "$nin") ++ ":[" ++ (join "," $ map show nums) ++ "]}"
+  show (NotInStrList field strs) = (showStr field) ++ ":{" ++ (show "$nin") ++ ":[" ++ (join "," $ map showStr strs) ++ "]}"
+  show (BeginsWith field str) = (showStr field) ++ ":{" ++ (show "$bw") ++ ":" ++ (showStr str) ++ "}"
+  show (NotBeginsWith field str) = (showStr field) ++ ":{" ++ (show "$nbw") ++ ":" ++ (showStr str) ++ "}"
+  show (BeginsWithAny field strs) = (showStr field) ++ ":{" ++ (show "$bwin") ++ ":[" ++ (join "," $ map showStr strs) ++ "]}"
+  show (NotBeginsWithAny field strs) = (showStr field) ++ ":{" ++ (show "$nbwin") ++ ":[" ++ (join "," $ map showStr strs) ++ "]}"
+  show (IsBlank field) = (showStr field) ++ ":{\"$blank\":true}"
+  show (IsNotBlank field) = (showStr field) ++ ":{\"$blank\":false}"
+  show (GreaterThan field num) = (showStr field) ++ ":{" ++ (show "$gt") ++ ":" ++ (show num) ++ "}"
+  show (GreaterThanOrEqualTo field num) = (showStr field) ++ ":{" ++ (show "$gte") ++ ":" ++ (show num) ++ "}"
+  show (LessThan field num) = (showStr field) ++ ":{" ++ (show "$lt") ++ ":" ++ (show num) ++ "}"
+  show (LessThanOrEqualTo field num) = (showStr field) ++ ":{" ++ (show "$lte") ++ ":" ++ (show num) ++ "}"
+  show (SearchFilter field str) = (showStr field) ++ ":{" ++ (show "$search") ++ ":" ++ (showStr str) ++ "}"
   show (And filters) = (show "$and") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
   show (Or filters) = (show "$or") ++ ":[" ++ (join "," $ map showFilter filters) ++ "]"
 
 -- The following helper functions are used in generating query params.
 showFilter :: Filter -> String
 showFilter filter = "{" ++ (show filter) ++ "}"
+
+showStr :: String -> String
+showStr str = "\"" ++ replace "\"" "\\\"" str ++ "\""
 
 filtersPair :: [Filter] -> (String, String)
 filtersPair [] = ("filters", "")

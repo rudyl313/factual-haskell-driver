@@ -8,8 +8,8 @@ module Data.Factual.Query.ResolveQuery
   ) where
 
 import Data.Factual.Query
-import Data.Factual.Utils
 import qualified Data.Map as M
+import Data.List.Utils (join)
 
 -- | A resolve value can either be a String or a Number (Double). The first
 --   argument is the name of the field and the second argument is the input

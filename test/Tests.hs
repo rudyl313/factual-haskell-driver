@@ -428,16 +428,20 @@ readIntegrationTest token = TestCase (do
 unicodeIntegrationTest :: Token -> Test
 unicodeIntegrationTest token = TestCase (do
   let query = ReadQuery { table = Global
-                        , search = AndSearch ["משה"]
+                        , search = NoSearch
                         , select = []
                         , limit = Nothing
                         , offset = Nothing
                         , includeCount = False
                         , geo = Nothing
                         , sort = []
-                        , filters = [] }
+                        , filters = [EqualStr "locality" "בני ברק"] }
   result <- executeQuery token query
-  assertEqual "Valid read query" "ok" (status result))
+  let resp = response result
+  let dat = lookupValue "data" resp
+  let row = (toList dat) !! 0
+  let loc = lookupString "locality" row
+  assertEqual "Correctly encoded locality" loc "בני ברק")
 
 schemaIntegrationTest :: Token -> Test
 schemaIntegrationTest token = TestCase (do

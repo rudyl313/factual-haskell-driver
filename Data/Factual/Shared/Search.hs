@@ -7,7 +7,7 @@ module Data.Factual.Shared.Search
   , searchPair
   ) where
 
-import Data.Factual.Utils
+import Data.List.Utils (join)
 
 -- | This type is used to construct an ANDed or ORed search in a query.
 data Search = AndSearch [String] | OrSearch [String] | NoSearch deriving Eq

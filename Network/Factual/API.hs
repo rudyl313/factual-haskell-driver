@@ -27,8 +27,8 @@ import Network.OAuth.Http.Response (Response(..))
 import Network.OAuth.Http.CurlHttpClient (CurlClient(..))
 import Data.Aeson (Value, decode)
 import Data.Aeson.Encode (encode)
+import Data.List.Utils (join)
 import Data.Factual.Query
-import Data.Factual.Utils
 import qualified Data.Factual.Write as W
 import qualified Data.Map as M
 import qualified Data.ByteString.Lazy.Char8 as B
