@@ -1,5 +1,5 @@
 name:            factual-api
-version:         0.5.1
+version:         0.5.2
 license:         BSD3
 license-file:    LICENSE.txt
 category:        API, Web
@@ -55,11 +55,13 @@ library
     base == 4.*,
     bytestring,
     containers,
+    dataenc >= 0.14.0.3,
     hoauth >= 0.3.5,
     HTTP,
     MissingH >= 1.0.0,
     text >= 0.11.1.5,
     unordered-containers >= 0.1.4.6,
+    utf8-string >= 0.3.7,
     vector >= 0.9.1
 
 source-repository head

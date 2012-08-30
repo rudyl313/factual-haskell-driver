@@ -1,3 +1,6 @@
+## 0.5.2 (August 30, 2012)
+  - Added missing dependencies
+
 ## 0.5.1 (August 30, 2012)
   - Added the Insert write type
   - Fixed unicode related issues
