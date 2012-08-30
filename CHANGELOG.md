@@ -1,4 +1,4 @@
-## 0.5.1 ()
+## 0.5.1 (August 30, 2012)
   - Added the Insert write type
   - Fixed unicode related issues
   - Forced version 0.3.5 (or higher) of hoauth to ensure full unicode
