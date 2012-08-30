@@ -49,6 +49,7 @@ You'll need a Factual account to use this driver. If you don't have one yet, [it
     $ git clone git@github.com:rudyl313/factual-haskell-driver.git
     $ cabal install hoauth
     $ cabal install aeson
+    $ cabal install MissingH
 
 # Tests
 

@@ -1,7 +1,9 @@
 ## 0.5.1 ()
   - Added the Insert write type
+  - Fixed unicode related issues
   - Forced version 0.3.5 (or higher) of hoauth to ensure full unicode
     support
+  - Added MissingH dependency
 
 ## 0.5.0 (August 8, 2012)
   - Modified Raw Read function (get) to take a path and a Map of query
