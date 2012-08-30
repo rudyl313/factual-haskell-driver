@@ -55,7 +55,7 @@ library
     base == 4.*,
     bytestring,
     containers,
-    hoauth >= 0.3.0,
+    hoauth >= 0.3.5,
     HTTP,
     text >= 0.11.1.5,
     unordered-containers >= 0.1.4.6,
