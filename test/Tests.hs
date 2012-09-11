@@ -1,4 +1,7 @@
 import Test.HUnit
+import System.IO
+import System.Environment
+import Data.String.Utils
 import Network.Factual.API
 import Data.Factual.Query.ReadQuery
 import Data.Factual.Query.SchemaQuery
@@ -18,7 +21,20 @@ import qualified Data.Factual.Write.Flag as L
 
 runUnitTests = runTestTT unitTests
 
-runIntegrationTests key secret = runTestTT $ integrationTests key secret
+runIntegrationTests = do
+  token <- getTokenFromCredentialsFile
+  runTestTT $ integrationTests token
+
+getTokenFromCredentialsFile = do
+  home <- getEnv "HOME"
+  yaml <- readFile $ home ++ "/.factual/factual-auth.yaml"
+  let lines = split "\n" yaml
+  let lines' = filter (\x -> length (split ":" x) == 2) lines
+  let pairs = map (map strip . split ":") lines'
+  let key = last $ head $ filter (\x -> head x == "key") pairs
+  let secret = last $ head $ filter (\x -> head x == "secret") pairs
+  let token = generateToken key secret
+  return token
 
 unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Restaurants table test" restaurantsTablePathTest
@@ -74,22 +90,21 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Flag path test" flagPathTest
                      , TestLabel "Flag body test" flagBodyTest ]
 
-integrationTests key secret = TestList [ TestLabel "Read test" (readIntegrationTest token)
-                                       , TestLabel "Unicode test" (unicodeIntegrationTest token)
-                                       , TestLabel "Schema test" (schemaIntegrationTest token)
-                                       , TestLabel "Resolve test" (resolveIntegrationTest token)
-                                       , TestLabel "Match test" (matchIntegrationTest token)
-                                       , TestLabel "Raw read test" (rawIntegrationTest token)
-                                       , TestLabel "Facets test" (facetsIntegrationTest token)
-                                       --, TestLabel "Diffs test" (diffsIntegrationTest token)
-                                       , TestLabel "Geopulse test" (geopulseIntegrationTest token)
-                                       , TestLabel "Geocode test" (geocodeIntegrationTest token)
-                                       , TestLabel "Multi test" (multiIntegrationTest token)
-                                       --, TestLabel "Submit test" (submitIntegrationTest token)
-                                       --, TestLabel "Insert test" (insertIntegrationTest token)
-                                       --, TestLabel "Flag test" (flagIntegrationTest token)
-                                       , TestLabel "Error test" (errorIntegrationTest token) ]
-                            where token = generateToken key secret
+integrationTests token = TestList [ TestLabel "Read test" (readIntegrationTest token)
+                                  , TestLabel "Unicode test" (unicodeIntegrationTest token)
+                                  , TestLabel "Schema test" (schemaIntegrationTest token)
+                                  , TestLabel "Resolve test" (resolveIntegrationTest token)
+                                  , TestLabel "Match test" (matchIntegrationTest token)
+                                  , TestLabel "Raw read test" (rawIntegrationTest token)
+                                  , TestLabel "Facets test" (facetsIntegrationTest token)
+                                  --, TestLabel "Diffs test" (diffsIntegrationTest token)
+                                  , TestLabel "Geopulse test" (geopulseIntegrationTest token)
+                                  , TestLabel "Geocode test" (geocodeIntegrationTest token)
+                                  , TestLabel "Multi test" (multiIntegrationTest token)
+                                  --, TestLabel "Submit test" (submitIntegrationTest token)
+                                  --, TestLabel "Insert test" (insertIntegrationTest token)
+                                  --, TestLabel "Flag test" (flagIntegrationTest token)
+                                  , TestLabel "Error test" (errorIntegrationTest token) ]
 
 placeTablePathTest = TestCase (do
   let expected = "/t/places"

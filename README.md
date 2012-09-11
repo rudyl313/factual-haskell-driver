@@ -53,17 +53,23 @@ You'll need a Factual account to use this driver. If you don't have one yet, [it
 
 # Tests
 
+To run the integration tests you'll need an to create a yaml file
+at ~/.factual/factual-auth.yaml to store your Factual credentials:
+
+    ---
+    key: MYKEY
+    secret: MYSECRET
+
 Load the tests file into ghci to run the tests:
 
     $ ghci test/Tests.hs
 
-To run the integration tests you'll need an API key and secret, but you
-can always run the unit tests:
+Here is how you run the the tests and what you should expect while in GHCi:
 
     *Main> runUnitTests
     Cases: 53  Tried: 53  Errors: 0  Failures: 0
     Counts {cases = 53, tried = 53, errors = 0, failures = 0}
-    *Main> runIntegrationTests "mykey" "mysecret"
+    *Main> runIntegrationTests
     Cases: 11  Tried: 11  Errors: 0  Failures: 0
     Counts {cases = 11, tried = 11, errors = 0, failures = 0}
 
