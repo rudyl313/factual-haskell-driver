@@ -64,7 +64,8 @@ Load the tests file into ghci to run the tests:
 
     $ ghci test/Tests.hs
 
-Here is how you run the the tests and what you should expect while in GHCi:
+Next you use the following functions to run the unit and integration
+tests respectively:
 
     *Main> runUnitTests
     Cases: 53  Tried: 53  Errors: 0  Failures: 0
