@@ -12,6 +12,7 @@ module Data.Factual.Write.Flag
 import Data.Factual.Write
 import Data.Factual.Shared.Table
 import Data.Maybe (fromJust)
+import Data.List.Utils (join)
 import Data.Factual.Utils
 import qualified Data.Map as M
 
@@ -34,7 +35,8 @@ data Flag = Flag { table     :: Table
                  , problem   :: Problem
                  , user      :: String
                  , comment   :: Maybe String
-                 , debug     :: Bool
+                 , dataJSON  :: Maybe String
+                 , fields    :: Maybe [String]
                  , reference :: Maybe String
                  } deriving (Eq, Show)
 
@@ -46,7 +48,8 @@ instance Write Flag where
   body flag = M.fromList [ ("problem", show $ problem flag)
                          , ("user", user flag)
                          , commentPair flag
-                         , debugPair flag
+                         , dataPair flag
+                         , fieldsPair flag
                          , referencePair flag ]
 
 -- The following functions are helpers for the body function
@@ -55,10 +58,16 @@ commentPair flag
   | comment flag == Nothing = ("comment", "")
   | otherwise               = ("comment", fromJust $ comment flag)
 
-debugPair :: Flag -> (String, String)
-debugPair flag
-  | debug flag == True = ("debug", "true")
-  | otherwise          = ("debug", "false")
+dataPair :: Flag -> (String, String)
+dataPair flag
+  | dataJSON flag == Nothing = ("data", "")
+  | otherwise                = ("data", fromJust $ dataJSON flag)
+
+fieldsPair :: Flag -> (String, String)
+fieldsPair flag
+  | fields flag == Nothing = ("fields", "")
+  | otherwise              = ("fields", arrayString)
+  where arrayString = "[" ++ (join "," $ fromJust $ fields flag) ++ "]"
 
 referencePair :: Flag -> (String, String)
 referencePair flag

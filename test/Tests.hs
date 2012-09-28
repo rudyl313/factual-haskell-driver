@@ -418,12 +418,10 @@ flagPathTest = TestCase (do
   assertEqual "Correct path for flag" expected path)
 
 flagBodyTest = TestCase (do
-  let expected = "problem=Duplicate&user=user123&comment=There was a problem&debug=false"
   let bodyParams = W.body flagWrite
   assertEqual "Correct problem" (bodyParams M.! "problem") "Duplicate"
   assertEqual "Correct user" (bodyParams M.! "user") "user123"
-  assertEqual "Correct comment" (bodyParams M.! "comment") "There was a problem"
-  assertEqual "Correct debug" (bodyParams M.! "debug") "false")
+  assertEqual "Correct comment" (bodyParams M.! "comment") "There was a problem")
 
 
 readIntegrationTest :: Token -> Test
@@ -537,6 +535,8 @@ submitIntegrationTest token = TestCase (do
   let write = S.Submit { S.table     = Custom "canada-edge"
                        , S.user      = "drivertest"
                        , S.factualId = Nothing
+                       , S.reference   = Nothing
+                       , S.comment     = Nothing
                        , S.values    = newValues }
   result <- executeWrite token write
   assertEqual "Valid submit" "ok" (status result))
@@ -561,7 +561,8 @@ flagIntegrationTest token = TestCase (do
                      , L.factualId = "f33527e0-a8b4-4808-a820-2686f18cb00c"
                      , L.problem   = L.Inaccurate
                      , L.comment   = Nothing
-                     , L.debug     = False
+                     , L.dataJSON  = Just "{\"lat\":-73.0000}"
+                     , L.fields    = Just ["lat"]
                      , L.reference = Nothing }
   result <- executeWrite token write
   assertEqual "Valid flag" "ok" (status result))
@@ -586,6 +587,8 @@ submitWrite :: S.Submit
 submitWrite = S.Submit { S.table     = Places
                        , S.user      = "user123"
                        , S.factualId = Just "foobar"
+                       , S.reference = Nothing
+                       , S.comment   = Nothing
                        , S.values    = M.fromList [("key", "val")] }
 
 insertWrite :: I.Insert
@@ -595,10 +598,11 @@ insertWrite = I.Insert { I.table     = Places
                        , I.values    = M.fromList [("key", "val")] }
 
 flagWrite :: L.Flag
-flagWrite = L.Flag { L.table     = Places
-                   , L.factualId = "foobar"
-                   , L.problem   = L.Duplicate
-                   , L.user      = "user123"
-                   , L.comment   = Just "There was a problem"
-                   , L.debug     = False
-                   , L.reference = Nothing }
+flagWrite = L.Flag { L.table       = Places
+                   , L.factualId   = "foobar"
+                   , L.problem     = L.Duplicate
+                   , L.user        = "user123"
+                   , L.comment     = Just "There was a problem"
+                   , L.dataJSON    = Nothing
+                   , L.fields      = Nothing
+                   , L.reference   = Nothing }
