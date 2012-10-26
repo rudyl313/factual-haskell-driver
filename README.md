@@ -71,8 +71,8 @@ tests respectively:
     Cases: 53  Tried: 53  Errors: 0  Failures: 0
     Counts {cases = 53, tried = 53, errors = 0, failures = 0}
     *Main> runIntegrationTests
-    Cases: 11  Tried: 11  Errors: 0  Failures: 0
-    Counts {cases = 11, tried = 11, errors = 0, failures = 0}
+    Cases: 14  Tried: 14  Errors: 0  Failures: 0
+    Counts {cases = 14, tried = 14, errors = 0, failures = 0}
 
 # Documentation
 
@@ -92,17 +92,3 @@ run an example go to the project root and execute these commands:
 In this example replace mykey with your key and mysecret with your
 secret. Note that compiling the source code generates .o and .hi
 files in the source directories.
-
-# Notes
-
-## Writes
-
-Although there is code in the current version to support API writes,
-these features have not yet been implemented in the Factual API. Please
-refrain from attempting to use these features until they have been
-officially announced.
-
-## Crosswalk deprecation
-
-The Crosswalk API endpoint has been migrated into a regular read table.
-For more information see the [Factual V3 documentation](http://developer.factual.com/display/docs/Places+API+-+Crosswalk).
