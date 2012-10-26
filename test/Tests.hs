@@ -435,7 +435,7 @@ readIntegrationTest token = TestCase (do
                         , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                         , sort = []
                         , filters = [EqualStr "name" "Stand"] }
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid read query" "ok" (status result))
 
 unicodeIntegrationTest :: Token -> Test
@@ -449,7 +449,7 @@ unicodeIntegrationTest token = TestCase (do
                         , geo = Nothing
                         , sort = []
                         , filters = [EqualStr "locality" "בני ברק"] }
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   let resp = response result
   let dat = lookupValue "data" resp
   let row = (toList dat) !! 0
@@ -459,25 +459,25 @@ unicodeIntegrationTest token = TestCase (do
 schemaIntegrationTest :: Token -> Test
 schemaIntegrationTest token = TestCase (do
   let query = SchemaQuery Places
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid schema query" "ok" (status result))
 
 resolveIntegrationTest :: Token -> Test
 resolveIntegrationTest token = TestCase (do
   let query = ResolveQuery { values = [ResolveStr "name" "McDonalds"],
                              debug = False }
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid resolve query" "ok" (status result))
 
 matchIntegrationTest :: Token -> Test
 matchIntegrationTest token = TestCase (do
   let query = MatchQuery [MatchStr "name" "McDonalds"]
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid match query" "ok" (status result))
 
 rawIntegrationTest :: Token -> Test
 rawIntegrationTest token = TestCase (do
-  result <- get token "/t/places" (M.fromList [("q", "starbucks")])
+  result <- get (Options { token = token, timeout = Nothing }) "/t/places" (M.fromList [("q", "starbucks")])
   assertEqual "Valid read query" "ok" (status result))
 
 facetsIntegrationTest token = TestCase (do
@@ -489,23 +489,23 @@ facetsIntegrationTest token = TestCase (do
                             , F.limit        = Just 100
                             , F.minCount     = Just 1
                             , F.includeCount = False }
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid facets query" "ok" (status result))
 
 diffsIntegrationTest token = TestCase (do
   let query = D.DiffsQuery { D.table = Custom "canada-stable", D.start = 1339123455775, D.end = 1339124455775 }
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid diffs query" "ok" (status result))
 
 geopulseIntegrationTest token = TestCase (do
   let query = G.GeopulseQuery { G.geo    = Point 34.06021 (-118.41828)
                               , G.select = [] }
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid geopulse query" "ok" (status result))
 
 geocodeIntegrationTest token = TestCase (do
   let query = GeocodeQuery $ Point 34.06021 (-118.41828)
-  result <- executeQuery token query
+  result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid geopulse query" "ok" (status result))
 
 
@@ -521,7 +521,7 @@ multiIntegrationTest token = TestCase (do
                          , sort = []
                          , filters = [EqualStr "name" "Stand"] }
   let query2 = query1 { filters = [EqualStr "name" "Xerox"] }
-  results <- executeMultiQuery token $ M.fromList [("query1", query1), ("query2", query2)]
+  results <- executeMultiQuery (Options { token = token, timeout = Nothing }) $ M.fromList [("query1", query1), ("query2", query2)]
   let result1 = results M.! "query1"
   let result2 = results M.! "query2"
   assertEqual "Valid multi query" ["ok","ok"] [status result1, status result2])
@@ -538,7 +538,7 @@ submitIntegrationTest token = TestCase (do
                        , S.reference   = Nothing
                        , S.comment     = Nothing
                        , S.values    = newValues }
-  result <- executeWrite token write
+  result <- executeWrite (Options { token = token, timeout = Nothing }) write
   assertEqual "Valid submit" "ok" (status result))
 
 insertIntegrationTest :: Token -> Test
@@ -551,7 +551,7 @@ insertIntegrationTest token = TestCase (do
                        , I.user      = "drivertest"
                        , I.factualId = Nothing
                        , I.values    = newValues }
-  result <- executeWrite token write
+  result <- executeWrite (Options { token = token, timeout = Nothing }) write
   assertEqual "Valid insert" "ok" (status result))
 
 flagIntegrationTest :: Token -> Test
@@ -564,12 +564,12 @@ flagIntegrationTest token = TestCase (do
                      , L.dataJSON  = Just "{\"lat\":-73.0000}"
                      , L.fields    = Just ["lat"]
                      , L.reference = Nothing }
-  result <- executeWrite token write
+  result <- executeWrite (Options { token = token, timeout = Nothing }) write
   assertEqual "Valid flag" "ok" (status result))
 
 errorIntegrationTest :: Token -> Test
 errorIntegrationTest token = TestCase (do
-  result <- get token "/t/foobarbaz" (M.empty)
+  result <- get (Options { token = token, timeout = Nothing }) "/t/foobarbaz" (M.empty)
   assertEqual "Invalud read query" "error" (status result))
 
 blankReadQuery :: ReadQuery

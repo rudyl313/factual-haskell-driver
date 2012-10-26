@@ -10,8 +10,8 @@ main = do
   args <- getArgs
   let oauthKey = head args
   let oauthSecret = last args
-  let token = generateToken oauthKey oauthSecret
-  result <- get token "/t/places" $ M.fromList [("q", "starbucks")]
+  let options = Options { token = generateToken oauthKey oauthSecret, timeout = Nothing }
+  result <- get options "/t/places" $ M.fromList [("q", "starbucks")]
   putStrLn $ "Status: " ++ status result
   putStrLn $ "Version: " ++ show (version result)
   putStrLn $ "Data: " ++ show (response result)

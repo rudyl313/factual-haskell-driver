@@ -11,7 +11,7 @@ main = do
   args <- getArgs
   let oauthKey = head args
   let oauthSecret = last args
-  let token = generateToken oauthKey oauthSecret
+  let options = Options { token = generateToken oauthKey oauthSecret, timeout = Nothing }
   let query1 = ReadQuery { table = Places
                          , search = AndSearch []
                          , select = ["name"]
@@ -29,7 +29,7 @@ main = do
                          , geo = Just (Circle 34.06021 (-118.41828) 5000.0)
                          , filters = [EqualStr "name" "Xerox"] }
   let multiQuery = M.fromList [("query1", query1), ("query2", query2)]
-  multiResult <- executeMultiQuery token multiQuery
+  multiResult <- executeMultiQuery options multiQuery
   let result1 = multiResult M.! "query1"
   let result2 = multiResult M.! "query2"
   putStrLn "query1:"

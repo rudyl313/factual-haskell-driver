@@ -10,10 +10,10 @@ main = do
   args <- getArgs
   let oauthKey = head args
   let oauthSecret = last args
-  let token = generateToken oauthKey oauthSecret
+  let options = Options { token = generateToken oauthKey oauthSecret, timeout = Nothing }
   let query = MatchQuery [ MatchStr "name" "McDonalds"
                          , MatchStr "address" "10451 Santa Monica Blvd" ]
-  result <- executeQuery token query
+  result <- executeQuery options query
   putStrLn $ "Status: " ++ status result
   putStrLn $ "Version: " ++ show (version result)
   putStrLn $ "Data: " ++ show (response result)
