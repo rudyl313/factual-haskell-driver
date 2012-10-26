@@ -61,7 +61,9 @@ lookupString key hashmap = extractString $ lookupValue key hashmap
 -- | This function can be used to extract any Aeson value from an Aeson Object
 --   (HashMap) value.
 lookupValue :: String -> Value -> Value
-lookupValue key hashmap = fromJust $ lookupValueSafe key hashmap
+lookupValue key hashmap = if maybeValue == Nothing then Null else fromJust maybeValue
+  where maybeValue = lookupValueSafe key hashmap
+
 
 -- | This function can be used to safely extract any Aeson value from an Aeson
 --    Object (HashMap) value.
