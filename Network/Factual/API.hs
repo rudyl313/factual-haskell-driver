@@ -49,6 +49,7 @@ type Path   = String
 type Params = M.Map String String
 type Body   = M.Map String String
 
+-- | Options is used to store the Token and a potential timeout
 data Options = Options { token   :: Token,
                          timeout :: Maybe Long }
 
@@ -57,14 +58,14 @@ data Options = Options { token   :: Token,
 generateToken :: Key -> Secret -> Token
 generateToken key secret = fromApplication $ Application key secret OOB
 
--- | This function takes a Token and Query value and sends the query to the
+-- | This function takes Options and a Query value and sends the query to the
 --   Factual API. The resultant IO action contains a Response value which wraps
 --   the resultant data.
 executeQuery :: (Query query) => Options -> query -> IO F.Response
 executeQuery options query = get options (path query) (params query)
 
 -- | This function can be used to make a Multi Query (multiple queries in a single
---   request. It takes a Token, a Map of key Strings to Queries and returns a Map
+--   request. It takes Options, a Map of key Strings to Queries and returns a Map
 --   from the same keys to Response values.
 executeMultiQuery :: (Query query) => Options -> M.Map String query -> IO (M.Map String F.Response)
 executeMultiQuery options multiMap = do
@@ -77,7 +78,7 @@ executeMultiQuery options multiMap = do
 debugQuery :: (Query query) => query -> IO ()
 debugQuery query = putStrLn $ "Query path: " ++ basePath ++ (formQueryString (path query) (params query))
 
--- | This function is used to execute Writes. The function takes a Token and a
+-- | This function is used to execute Writes. The function takes Options and a
 --   Write value, and returns a Response value.
 executeWrite :: (W.Write write) => Options -> write -> IO F.Response
 executeWrite options write = post options (W.path write) (W.params write) (W.body write)
@@ -91,13 +92,13 @@ debugWrite write = do
   putStrLn $ formParamsString $ W.body write
 
 -- | This function can be used to perform raw read queries to any API endpoint.
---   It takes a Token, a Path string and a Map of params (both keys and values
+--   It takes Options, a Path string and a Map of params (both keys and values
 --   are strings). The function returns a standard Response value.
 get :: Options -> Path -> Params -> IO F.Response
 get options path params = get' options (formQueryString path params)
 
 -- | This function can be used to perform raw post queries to any API endpoint.
---   It takes a Token, a Path string, a Map of params and a body Map. Both Maps
+--   It takes Options, a Path string, a Map of params and a body Map. Both Maps
 --   have String keys and values. The function returns a standard Response value.
 post :: Options -> Path -> Params -> Body -> IO F.Response
 post options path params body = post' options queryString bodyString
