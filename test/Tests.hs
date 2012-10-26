@@ -101,9 +101,9 @@ integrationTests token = TestList [ TestLabel "Read test" (readIntegrationTest t
                                   , TestLabel "Geopulse test" (geopulseIntegrationTest token)
                                   , TestLabel "Geocode test" (geocodeIntegrationTest token)
                                   , TestLabel "Multi test" (multiIntegrationTest token)
-                                  --, TestLabel "Submit test" (submitIntegrationTest token)
-                                  --, TestLabel "Insert test" (insertIntegrationTest token)
-                                  --, TestLabel "Flag test" (flagIntegrationTest token)
+                                  , TestLabel "Submit test" (submitIntegrationTest token)
+                                  , TestLabel "Insert test" (insertIntegrationTest token)
+                                  , TestLabel "Flag test" (flagIntegrationTest token)
                                   , TestLabel "Error test" (errorIntegrationTest token) ]
 
 placeTablePathTest = TestCase (do
@@ -493,7 +493,7 @@ facetsIntegrationTest token = TestCase (do
   assertEqual "Valid facets query" "ok" (status result))
 
 diffsIntegrationTest token = TestCase (do
-  let query = D.DiffsQuery { D.table = Custom "canada-stable", D.start = 1339123455775, D.end = 1339124455775 }
+  let query = D.DiffsQuery { D.table = Custom "t7RSEV", D.start = 1339123455775, D.end = 1339124455775 }
   result <- executeQuery (Options { token = token, timeout = Nothing }) query
   assertEqual "Valid diffs query" "ok" (status result))
 
@@ -532,11 +532,11 @@ submitIntegrationTest token = TestCase (do
                              , ("address","1801 Avenue of the Stars, Suite 1450")
                              , ("country","USA")
                              , ("locality","Los Angeles") ]
-  let write = S.Submit { S.table     = Custom "canada-edge"
+  let write = S.Submit { S.table     = Custom "t7RSEV"
                        , S.user      = "drivertest"
                        , S.factualId = Nothing
-                       , S.reference   = Nothing
-                       , S.comment     = Nothing
+                       , S.reference = Nothing
+                       , S.comment   = Nothing
                        , S.values    = newValues }
   result <- executeWrite (Options { token = token, timeout = Nothing }) write
   assertEqual "Valid submit" "ok" (status result))
@@ -547,7 +547,7 @@ insertIntegrationTest token = TestCase (do
                              , ("address","1801 Avenue of the Stars, Suite 1450")
                              , ("country","USA")
                              , ("locality","Los Angeles") ]
-  let write = I.Insert { I.table     = Custom "canada-edge"
+  let write = I.Insert { I.table     = Custom "t7RSEV"
                        , I.user      = "drivertest"
                        , I.factualId = Nothing
                        , I.values    = newValues }
@@ -556,13 +556,13 @@ insertIntegrationTest token = TestCase (do
 
 flagIntegrationTest :: Token -> Test
 flagIntegrationTest token = TestCase (do
-  let write = L.Flag { L.table     = Custom "canada-edge"
+  let write = L.Flag { L.table     = Custom "t7RSEV"
                      , L.user      = "drivertest"
-                     , L.factualId = "f33527e0-a8b4-4808-a820-2686f18cb00c"
+                     , L.factualId = "97a38c06-cde1-402d-ad5a-4ae408530386"
                      , L.problem   = L.Inaccurate
                      , L.comment   = Nothing
-                     , L.dataJSON  = Just "{\"lat\":-73.0000}"
-                     , L.fields    = Just ["lat"]
+                     , L.dataJSON  = Nothing
+                     , L.fields    = Nothing
                      , L.reference = Nothing }
   result <- executeWrite (Options { token = token, timeout = Nothing }) write
   assertEqual "Valid flag" "ok" (status result))
