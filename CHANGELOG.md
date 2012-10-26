@@ -1,3 +1,9 @@
+## 0.6.0 (October 26, 2012)
+  - Using credentials file for integration tests
+  - Made Response type more robust
+  - Released Atomic features (Submit, Flag, Insert)
+  - Introduced Options type for the token and timeout option
+
 ## 0.5.2 (August 30, 2012)
   - Added missing dependencies
 
