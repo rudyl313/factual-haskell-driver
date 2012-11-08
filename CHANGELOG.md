@@ -1,3 +1,4 @@
+## 0.6.1 (November 8, 2012)
   - Added the Clear type for clearing fields
   - Updated ghc to 7.4.2 and Haskell platform to 2012.4.0.0
 

@@ -176,7 +176,7 @@ urlEncode :: String -> String
 urlEncode = U.encode . S.encode
 
 headersList :: [(String, String)]
-headersList = [("X-Factual-Lib", "factual-haskell-driver-0.6.0")]
+headersList = [("X-Factual-Lib", "factual-haskell-driver-0.6.1")]
 
 basePath :: String
 basePath = "http://api.v3.factual.com"
