@@ -68,11 +68,11 @@ Next you use the following functions to run the unit and integration
 tests respectively:
 
     *Main> runUnitTests
-    Cases: 53  Tried: 53  Errors: 0  Failures: 0
-    Counts {cases = 53, tried = 53, errors = 0, failures = 0}
+    Cases: 55  Tried: 55  Errors: 0  Failures: 0
+    Counts {cases = 55, tried = 55, errors = 0, failures = 0}
     *Main> runIntegrationTests
-    Cases: 14  Tried: 14  Errors: 0  Failures: 0
-    Counts {cases = 14, tried = 14, errors = 0, failures = 0}
+    Cases: 15  Tried: 15  Errors: 0  Failures: 0
+    Counts {cases = 15, tried = 15, errors = 0, failures = 0}
 
 # Documentation
 

@@ -1,3 +1,6 @@
+  - Added the Clear type for clearing fields
+  - Updated ghc to 7.4.2 and Haskell platform to 2012.4.0.0
+
 ## 0.6.0 (October 26, 2012)
   - Using credentials file for integration tests
   - Made Response type more robust

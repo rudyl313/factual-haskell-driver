@@ -18,6 +18,7 @@ import qualified Data.Factual.Query.GeopulseQuery as G
 import qualified Data.Factual.Write.Submit as S
 import qualified Data.Factual.Write.Insert as I
 import qualified Data.Factual.Write.Flag as L
+import qualified Data.Factual.Write.Clear as C
 
 runUnitTests = runTestTT unitTests
 
@@ -88,7 +89,9 @@ unitTests = TestList [ TestLabel "Place table test" placeTablePathTest
                      , TestLabel "Insert path test" insertPathTest
                      , TestLabel "Insert body test" insertBodyTest
                      , TestLabel "Flag path test" flagPathTest
-                     , TestLabel "Flag body test" flagBodyTest ]
+                     , TestLabel "Flag body test" flagBodyTest
+                     , TestLabel "Clear path test" clearPathTest
+                     , TestLabel "Clear body test" clearBodyTest ]
 
 integrationTests token = TestList [ TestLabel "Read test" (readIntegrationTest token)
                                   , TestLabel "Unicode test" (unicodeIntegrationTest token)
@@ -104,6 +107,7 @@ integrationTests token = TestList [ TestLabel "Read test" (readIntegrationTest t
                                   , TestLabel "Submit test" (submitIntegrationTest token)
                                   , TestLabel "Insert test" (insertIntegrationTest token)
                                   , TestLabel "Flag test" (flagIntegrationTest token)
+                                  , TestLabel "Clear test" (clearIntegrationTest token)
                                   , TestLabel "Error test" (errorIntegrationTest token) ]
 
 placeTablePathTest = TestCase (do
@@ -423,6 +427,15 @@ flagBodyTest = TestCase (do
   assertEqual "Correct user" (bodyParams M.! "user") "user123"
   assertEqual "Correct comment" (bodyParams M.! "comment") "There was a problem")
 
+clearPathTest = TestCase (do
+  let expected = "/t/places/foobar/clear"
+  let path = W.path clearWrite
+  assertEqual "Correct path for clear" expected path)
+
+clearBodyTest = TestCase (do
+  let bodyParams = W.body clearWrite
+  assertEqual "Correct user" (bodyParams M.! "user") "user123"
+  assertEqual "Correct fields" (bodyParams M.! "fields") "latitude,longitude")
 
 readIntegrationTest :: Token -> Test
 readIntegrationTest token = TestCase (do
@@ -567,6 +580,15 @@ flagIntegrationTest token = TestCase (do
   result <- executeWrite (Options { token = token, timeout = Nothing }) write
   assertEqual "Valid flag" "ok" (status result))
 
+clearIntegrationTest :: Token -> Test
+clearIntegrationTest token = TestCase (do
+  let write = C.Clear { C.table     = Custom "t7RSEV"
+                      , C.user      = "drivertest"
+                      , C.factualId = "97a38c06-cde1-402d-ad5a-4ae408530386"
+                      , C.fields    = ["country"] }
+  result <- executeWrite (Options { token = token, timeout = Nothing }) write
+  assertEqual "Valid clear" "ok" (status result))
+
 errorIntegrationTest :: Token -> Test
 errorIntegrationTest token = TestCase (do
   result <- get (Options { token = token, timeout = Nothing }) "/t/foobarbaz" (M.empty)
@@ -606,3 +628,9 @@ flagWrite = L.Flag { L.table       = Places
                    , L.dataJSON    = Nothing
                    , L.fields      = Nothing
                    , L.reference   = Nothing }
+
+clearWrite :: C.Clear
+clearWrite = C.Clear { C.table       = Places
+                     , C.factualId   = "foobar"
+                     , C.user        = "user123"
+                     , C.fields      = ["latitude", "longitude"] }
