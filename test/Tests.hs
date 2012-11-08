@@ -454,7 +454,7 @@ unicodeIntegrationTest token = TestCase (do
   let dat = lookupValue "data" resp
   let row = (toList dat) !! 0
   let loc = lookupString "locality" row
-  assertEqual "Correctly encoded locality" loc "בני ברק")
+  assertEqual "Correctly encoded locality" "בני ברק" loc)
 
 schemaIntegrationTest :: Token -> Test
 schemaIntegrationTest token = TestCase (do

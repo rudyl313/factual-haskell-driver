@@ -4,3 +4,4 @@ Vagrantfile
 main
 dist/*
 /cabal-dev
+factual-auth.yaml

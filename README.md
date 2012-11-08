@@ -92,3 +92,10 @@ run an example go to the project root and execute these commands:
 In this example replace mykey with your key and mysecret with your
 secret. Note that compiling the source code generates .o and .hi
 files in the source directories.
+
+# Locale issues
+
+If you're using Linux and experience character encoding issues add the
+following line to your bashrc before using the code:
+
+  export LC_ALL="en_US.UTF-8"
