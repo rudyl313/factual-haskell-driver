@@ -33,8 +33,8 @@ This is a Haskell driver for [Factual's public API](http://developer.factual.com
 
 ## Prerequisites
 
-This driver targets [ghc 7.4.1](http://www.haskell.org/ghc/)
-and [The Haskell Platform 2012.2.0.0](http://hackage.haskell.org/platform/).
+This driver targets [ghc 7.4.2](http://www.haskell.org/ghc/)
+and [The Haskell Platform 2012.4.0.0](http://hackage.haskell.org/platform/).
 Please follow the installation instructions for your specific
 platform to install ghc and The Haskell Platform.
 
