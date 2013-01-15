@@ -7,6 +7,7 @@ module Network.Factual.API
     -- * Read functions
   , executeQuery
   , executeMultiQuery
+  , executeMultiQueryAsPost
   , get
     -- * Write functions
   , executeWrite
@@ -71,6 +72,18 @@ executeMultiQuery :: (Query query) => Options -> M.Map String query -> IO (M.Map
 executeMultiQuery options multiMap = do
   let queryString = formMultiQueryString $ M.toList multiMap
   response <- get'' options queryString
+  return $ formMultiResponse response $ M.keys multiMap
+
+-- | This function can be used to make a Multi Query as a post instead of a get.
+--   This is useful for users that want to perform a large number of queries in
+--   their multi request. The arguements are the same as the executeMultiQuery
+--   function.
+executeMultiQueryAsPost :: (Query query) => Options -> M.Map String query -> IO (M.Map String F.Response)
+executeMultiQueryAsPost options multiMap = do
+  let paramString = formMultiParamsString $ M.toList multiMap
+  let fullPath = basePath ++ multiPath
+  let request = generatePostRequest fullPath paramString
+  response <- execute options request
   return $ formMultiResponse response $ M.keys multiMap
 
 -- | This function can be used to debug Queries. It takes a Query value and prints
@@ -142,8 +155,14 @@ formParamsString' paramList = join "&" $ map formParamParts filteredParams
 formParamParts :: (String, String) -> String
 formParamParts (key, value) = key ++ "=" ++ (urlEncode value)
 
+multiPath :: String
+multiPath = "/multi"
+
 formMultiQueryString :: (Query query) => [(String, query)] -> String
-formMultiQueryString ps = "/multi?queries=" ++ (urlEncode $ "{" ++ (join "," $ map queryPair ps) ++ "}")
+formMultiQueryString ps = multiPath ++ "?" ++ formMultiParamsString ps
+
+formMultiParamsString :: (Query query) => [(String, query)] -> String
+formMultiParamsString ps = "queries=" ++ (urlEncode $ "{" ++ (join "," $ map queryPair ps) ++ "}")
   where queryPair (n,q) = "\"" ++ n ++ "\":\"" ++ (formQueryString (path q) (params q)) ++ "\""
 
 formMultiResponse :: Response -> [String] -> M.Map String F.Response
